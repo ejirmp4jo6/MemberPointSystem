@@ -1,70 +1,74 @@
+/* ====== Mobile layout ====== */
 :root{
-  --brand:#1e88e5;          /* 主色 */
-  --brand-ink:#0b3d6e;      /* 深色按鈕/字 */
-  --bg:#f6f7fb;             /* 頁面底色 */
-  --card:#ffffff;           /* 卡片底色 */
-  --muted:#6c757d;          /* 次要文字 */
-  --radius:16px;
-  --shadow:0 6px 24px rgba(16,24,40,.08);
+  --brand:#0b5d74;
+  --ink:#0a2e3a;
+  --bg:#f6f7fb;
+  --card:#ffffff;
+  --radius:18px;
+  --shadow:0 8px 28px rgba(16,24,40,.12);
 }
-
 body{ background:var(--bg); }
+.container { max-width: 480px; }     /* 針對手機的閱讀寬度 */
 
-.navbar{ box-shadow: 0 1px 0 rgba(0,0,0,.06); }
-.navbar .navbar-brand{ font-weight:700; color:var(--brand-ink); }
-
-.cardish{
-  background:var(--card);
-  border-radius:var(--radius);
+/* 黑卡區 */
+.blackcard {
+  background:#000;
+  color:#fff;
+  border-radius:24px;
+  padding:22px 18px;
   box-shadow:var(--shadow);
-  padding:1.25rem;
+  text-align:center;
 }
+.blackcard .brand { font-weight:800; letter-spacing:.5px; }
+.blackcard .number{
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing:.12em; font-size:1.1rem; margin:12px 0 14px;
+}
+.blackcard .meta{ display:flex; justify-content:center; gap:36px; font-size:.95rem; opacity:.95; }
+.blackcard .label{ display:block; font-size:.75rem; opacity:.75; }
 
-.kpi{
-  font-weight:800; font-size:2.5rem; line-height:1; letter-spacing:.5px;
+.code-panel{
+  background:#fff;
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  padding:14px;
+  text-align:center;
 }
+.code-switch{ display:flex; gap:10px; margin-bottom:10px; }
+.code-switch .btn{ flex:1; border-radius:10px; }
+.code-box{
+  background:#fff; border:1px solid #e6e9ef;
+  border-radius:14px; padding:14px;
+  display:flex; justify-content:center; align-items:center;
+}
+.code-box img{ max-width:280px; width:100%; height:auto; }
 
-.badge-soft{
-  background: rgba(30,136,229,.12);
-  color: var(--brand-ink);
-  border-radius:999px;
-  padding:.25rem .6rem;
-  font-size:.78rem;
-}
+/* 交易卡片 */
+.cardish{ background:var(--card); border-radius:18px; box-shadow:var(--shadow); padding:14px; }
 
-.table-clean > :not(caption) > * > *{
-  background:transparent !important;
-  border-bottom:1px solid #eef1f6;
+/* 底部分頁（固定於底部） */
+.app-tabs{
+  position:fixed; left:0; right:0; bottom:0;
+  background:transparent; /* 讓四個圓角按鈕在卡片上方感覺 */
+  padding:6px 10px calc(6px + env(safe-area-inset-bottom));
+  display:flex; justify-content:center;
+  z-index: 1000;
 }
+.app-tabs .tab-wrap{
+  width:100%; max-width:480px;
+  display:grid; grid-template-columns: repeat(4, 1fr);
+  gap:10px;
+}
+.tab-btn{
+  background: var(--brand);
+  color:#fff; border:none; border-radius:16px;
+  padding:10px 6px; font-size:.9rem; text-align:center;
+  text-decoration:none;
+}
+.tab-btn.active{ filter: brightness(.92); }
+main.container{ padding-bottom: 90px; } /* 給底部 tabs 留空間 */
 
-.btn-brand{
-  background:var(--brand);
-  border-color:var(--brand);
+/* 小螢幕微調 */
+@media (max-width: 360px){
+  .blackcard .meta{ gap:20px; }
 }
-.btn-brand:hover{ filter:brightness(.95); }
-
-.footer-muted{
-  color:var(--muted); font-size:.85rem;
-}
-
-.card-black {
-  background: #0e0f12 url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
-  color: #fff; border-radius: 20px; padding: 20px;
-  box-shadow: 0 16px 40px rgba(0,0,0,.35);
-  position: relative; overflow: hidden;
-}
-.card-black .brand { font-weight:800; letter-spacing:.5px; }
-.card-black .number { font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 1.25rem; letter-spacing: .12em; margin: 10px 0 18px; }
-.card-black .meta { display:flex; gap:32px; font-size:.95rem; opacity:.95; }
-.card-black .label { display:block; font-size:.75rem; opacity:.8; }
-.ribbon {
-  background: #f5f5f7; border-radius: 12px; padding: 12px 14px; display:flex; justify-content:space-between; align-items:center;
-}
-.action-row .btn{ min-width: 140px; }
-.qr-box { background:#fff; border-radius: 14px; padding:14px; display:flex; justify-content:center; align-items:center; }
-.bottom-tabs{ position:sticky; bottom:0; background:#fff; border-top:1px solid #eef1f6; }
-.bottom-tabs .tab{ flex:1; text-align:center; padding:10px 6px; font-size:.85rem; color:#6c757d; }
-
-.action-row .btn { min-width: 140px; }
-.qr-box { background:#fff; border-radius:14px; padding:14px; display:flex; justify-content:center; align-items:center; }
