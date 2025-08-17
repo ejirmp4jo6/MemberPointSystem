@@ -34,10 +34,16 @@
   <form method="post" action="{% url 'earn_points' %}" class="row g-3">
     {% csrf_token %}
     <div class="col-12">
-      <label class="form-label">會員條碼值</label>
-      <input name="barcode_token" id="token-input" class="form-control" placeholder="掃描或貼上 token" required>
-      <div class="form-text">可掃 QR / Code128；或手動貼上。</div>
+      <label class="form-label">會員 QRCode</label>
+      <div class="input-group">
+        <input name="barcode_token" id="token-input" class="form-control" placeholder="掃描或貼上 QRCode" required>
+        <button class="btn btn-outline-secondary" type="button" id="open-scanner" aria-label="開啟相機掃描">
+          <i class="bi bi-camera"></i>
+        </button>
+      </div>
+      <div class="form-text">點右邊相機圖示即可開啟鏡頭掃描。</div>
     </div>
+
     <div class="col-6">
       <label class="form-label">消費金額（TWD）</label>
       <input name="amount_twd" id="amount-input" type="number" min="0" step="1" class="form-control" required>
