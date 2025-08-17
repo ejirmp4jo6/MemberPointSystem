@@ -1,9 +1,21 @@
 {% extends "base.html" %}
 {% block title %}首頁{% endblock %}
 {% block content %}
-<div class="p-4 bg-white rounded-3 shadow-sm">
-  <h3 class="mb-3">歡迎來到會員集點系統</h3>
-  <p class="text-secondary">點餐按鈕會導向 iCHEF 匿名點餐。</p>
-  <a class="btn btn-success" href="https://shop.ichefpos.com/store/Al0mfcsy/ordering" target="_blank" rel="noopener">前往點餐（iCHEF）</a>
+<div class="row gy-3">
+  <div class="col-12">
+    <div class="cardish">
+      <h3 class="mb-1">歡迎來到會員集點系統</h3>
+      <p class="text-muted mb-3">點餐功能將導向 iCHEF 匿名點餐頁。</p>
+      <a class="btn btn-success" href="https://shop.ichefpos.com/store/Al0mfcsy/ordering" target="_blank" rel="noopener">
+        前往點餐（iCHEF）
+      </a>
+      {% if user.is_authenticated %}
+        {% if user.is_staff or user.is_superuser %}
+          <a class="btn btn-warning ms-2" href="{% url 'scan_page' %}">店員累點</a>
+        {% endif %}
+      {% endif %}
+
+    </div>
+  </div>
 </div>
 {% endblock %}
