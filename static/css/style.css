@@ -1,0 +1,49 @@
+:root{
+  --brand:#1e88e5;          /* 主色 */
+  --brand-ink:#0b3d6e;      /* 深色按鈕/字 */
+  --bg:#f6f7fb;             /* 頁面底色 */
+  --card:#ffffff;           /* 卡片底色 */
+  --muted:#6c757d;          /* 次要文字 */
+  --radius:16px;
+  --shadow:0 6px 24px rgba(16,24,40,.08);
+}
+
+body{ background:var(--bg); }
+
+.navbar{ box-shadow: 0 1px 0 rgba(0,0,0,.06); }
+.navbar .navbar-brand{ font-weight:700; color:var(--brand-ink); }
+
+.cardish{
+  background:var(--card);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:1.25rem;
+}
+
+.kpi{
+  font-weight:800; font-size:2.5rem; line-height:1; letter-spacing:.5px;
+}
+
+.badge-soft{
+  background: rgba(30,136,229,.12);
+  color: var(--brand-ink);
+  border-radius:999px;
+  padding:.25rem .6rem;
+  font-size:.78rem;
+}
+
+.table-clean > :not(caption) > * > *{
+  background:transparent !important;
+  border-bottom:1px solid #eef1f6;
+}
+
+.btn-brand{
+  background:var(--brand);
+  border-color:var(--brand);
+}
+.btn-brand:hover{ filter:brightness(.95); }
+
+.footer-muted{
+  color:var(--muted); font-size:.85rem;
+}
+

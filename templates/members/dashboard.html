@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}我的點數{% endblock %}
+{% block content %}
+<div class="row g-3">
+  <div class="col-md-6">
+    <div class="bg-white p-4 rounded-3 shadow-sm">
+      <h5 class="mb-2">我的點數</h5>
+      <div class="display-6">{{ member.points }}</div>
+      <hr>
+      <h6 class="mb-2">會員條碼（店員掃描）</h6>
+      <img src="{% url 'barcode_image' %}" alt="barcode">
+      <p class="text-muted small mt-2">條碼值：{{ member.barcode_token }}</p>
+    </div>
+  </div>
+  <div class="col-md-6">
+    <div class="bg-white p-4 rounded-3 shadow-sm">
+      <h6 class="mb-3">最近交易</h6>
+      <ul class="list-group">
+        {% for t in txns %}
+        <li class="list-group-item d-flex justify-content-between">
+          <span>{{ t.created_at|date:"Y-m-d H:i" }}｜{{ t.note }}</span>
+          <strong class="{% if t.amount > 0 %}text-success{% else %}text-danger{% endif %}">
+            {% if t.amount > 0 %}+{% endif %}{{ t.amount }}
+          </strong>
+        </li>
+        {% empty %}
+        <li class="list-group-item text-muted">尚無交易</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

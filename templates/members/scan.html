@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}店員累點{% endblock %}
+{% block content %}
+<div class="bg-white p-4 rounded-3 shadow-sm">
+  <h5 class="mb-3">店員累點</h5>
+
+  <!-- 先提供手動輸入，之後可用相機掃碼（QuaggaJS / html5-qrcode） -->
+  <form method="post" action="{% url 'earn_points' %}" class="row g-3">
+    {% csrf_token %}
+    <div class="col-md-6">
+      <label class="form-label">會員條碼值</label>
+      <input name="barcode_token" class="form-control" placeholder="掃描或貼上 token" required>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label">消費金額（TWD）</label>
+      <input name="amount_twd" type="number" min="0" step="1" class="form-control" required>
+    </div>
+    <div class="col-md-12">
+      <label class="form-label">備註（可選）</label>
+      <input name="note" class="form-control" placeholder="例如：外帶咖啡兩杯">
+    </div>
+    <div class="col-12">
+      <button class="btn btn-primary">送出累點</button>
+    </div>
+  </form>
+
+  <hr class="my-4">
+  <p class="text-muted small">之後要加「相機掃碼」，可嵌 QuaggaJS 或 html5-qrcode，將掃到的內容填到上方的 <code>barcode_token</code> 欄位再送出。</p>
+</div>
+{% endblock %}
