@@ -44,22 +44,22 @@ def dashboard(request):
     txns = member.txns.all()[:10]
     return render(request, 'members/dashboard.html', {'member': member, 'txns': txns})
 
-# 條碼圖片：只有一般會員才有
-from barcode import Code128
-from barcode.writer import ImageWriter
-from io import BytesIO
+# # 條碼圖片：目前用不到
+# from barcode import Code128
+# from barcode.writer import ImageWriter
+# from io import BytesIO
 
-@login_required
-def barcode_image(request):
-    if request.user.is_staff or request.user.is_superuser:
-        raise PermissionDenied  # 店員不該有條碼
-    member = get_object_or_404(Member, user=request.user)
-    value = member.barcode_token
-    buf = BytesIO()
-    Code128(value, writer=ImageWriter()).write(buf, options={
-        'module_width': 0.2, 'module_height': 12, 'font_size': 10, 'text': value
-    })
-    return HttpResponse(buf.getvalue(), content_type='image/png')
+# @login_required
+# def barcode_image(request):
+#     if request.user.is_staff or request.user.is_superuser:
+#         raise PermissionDenied  # 店員不該有條碼
+#     member = get_object_or_404(Member, user=request.user)
+#     value = member.barcode_token
+#     buf = BytesIO()
+#     Code128(value, writer=ImageWriter()).write(buf, options={
+#         'module_width': 0.2, 'module_height': 12, 'font_size': 10, 'text': value
+#     })
+#     return HttpResponse(buf.getvalue(), content_type='image/png')
 
 # --- 店員累點頁（你之前已加 403 保護，保留即可） ---
 @login_required
