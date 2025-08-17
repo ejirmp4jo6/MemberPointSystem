@@ -1,25 +1,59 @@
 {% extends "base.html" %}
-{% block title %}我的點數{% endblock %}
+{% block title %}黑卡{% endblock %}
 {% block content %}
-<div class="row g-3">
-  <div class="col-lg-5">
-    <div class="cardish">
-      <div class="d-flex justify-content-between align-items-center">
-        <h6 class="mb-2">我的點數</h6>
-        <span class="badge-soft">一般會員</span>
+<div class="row gy-3">
+
+  <!-- 黑卡 -->
+  <div class="col-12">
+    <div class="card-black">
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="brand">LOUISA COFFEE</div>
+        <div class="small text-white-50">VIP CARD</div>
       </div>
-      <div class="kpi mb-3">{{ member.points }}</div>
-      <hr>
-      <h6 class="mb-2">會員條碼</h6>
-      <img src="{% url 'barcode_image' %}" alt="barcode" class="img-fluid" style="max-width:320px">
-      <p class="text-muted small mt-2">條碼值：{{ member.barcode_token }}</p>
+
+      <!-- 卡號（直接用 token；若想加空格可做 template filter，見下方進階） -->
+      <div class="number">{{ member.barcode_token }}</div>
+
+      <div class="meta">
+        <div>
+          <span class="label">Card Holder</span>
+          <div>{{ member.display_name|default:member.user.username }}</div>
+        </div>
+        <div>
+          <span class="label">Points</span>
+          <div>{{ member.points }}</div>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="col-lg-7">
+
+  <!-- 行銷橫條 -->
+  <div class="col-12">
+    <div class="ribbon">
+      <div class="text-muted">會員咖啡飲品第二杯 5 折 與 早餐（11 點前）優惠</div>
+      <a class="btn btn-sm btn-outline-dark" href="#" role="button">查看優惠</a>
+    </div>
+  </div>
+
+  <!-- 兩顆按鈕 -->
+  <div class="col-12">
+    <div class="d-flex gap-2 action-row">
+      <a class="btn btn-warning flex-fill" href="#qr">會員 QRCode</a>
+      <a class="btn btn-outline-secondary flex-fill" href="{% url 'barcode_image' %}" target="_blank">會員條碼</a>
+    </div>
+  </div>
+
+  <!-- QRCode 區 -->
+  <div id="qr" class="col-12">
+    <div class="qr-box">
+      <img src="{% url 'qrcode_image' %}" alt="QR code" class="img-fluid" style="max-width:260px">
+    </div>
+  </div>
+
+  <!-- 最近交易（保留） -->
+  <div class="col-12">
     <div class="cardish">
-      <div class="d-flex justify-content-between align-items-center mb-2">
-        <h6 class="mb-0">最近交易</h6>
-      </div>
+      <h6 class="mb-3">消費記錄</h6>
       <div class="table-responsive">
         <table class="table table-clean align-middle">
           <thead><tr><th>時間</th><th>說明</th><th class="text-end">點數</th></tr></thead>
@@ -42,5 +76,15 @@
       </div>
     </div>
   </div>
+
+</div>
+
+<!-- 底部導覽（示意） -->
+<div class="bottom-tabs d-flex mt-3 rounded-top">
+  <div class="tab">黑卡</div>
+  <div class="tab">點餐</div>
+  <div class="tab">消費記錄</div>
+  <div class="tab">購物車</div>
+  <div class="tab">個人</div>
 </div>
 {% endblock %}

@@ -94,3 +94,17 @@ def earn_points(request):
     messages.success(request, f'已為 {member.user.username} 累積 {points} 點（NT${amount_twd}）')
     return redirect('scan_page')
 
+@login_required
+def qrcode_image(request):
+    if request.user.is_staff or request.user.is_superuser:
+        from django.core.exceptions import PermissionDenied
+        raise PermissionDenied
+    member = get_object_or_404(Member, user=request.user)
+    data = member.barcode_token  # 也可改成 URL，如 f"https://your.site/m/{member.barcode_token}"
+    qr = qrcode.QRCode(box_size=8, border=2)
+    qr.add_data(data)
+    qr.make(fit=True)
+    img = qr.make_image(fill_color="black", back_color="white")
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    return HttpResponse(buf.getvalue(), content_type="image/png")
