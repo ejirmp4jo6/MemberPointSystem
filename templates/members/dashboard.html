@@ -35,21 +35,65 @@
     </div>
   </div>
 
-  <!-- 兩顆按鈕 -->
+  <!--QRCode區-->>
+  {% load static %}
+
+  <!-- 兩顆選項按鈕 -->
   <div class="col-12">
     <div class="d-flex gap-2 action-row">
-      <a class="btn btn-warning flex-fill" href="#qr">會員 QRCode</a>
-      <a class="btn btn-outline-secondary flex-fill" href="{% url 'barcode_image' %}" target="_blank">會員條碼</a>
+      <button class="btn btn-warning flex-fill" id="tab-qr" data-type="qr">會員 QRCode</button>
+      <button class="btn btn-outline-secondary flex-fill" id="tab-barcode" data-type="barcode">會員條碼</button>
     </div>
   </div>
 
-  <!-- QRCode 區 -->
-  <div id="qr" class="col-12">
-    <div class="qr-box">
-      <img src="{% url 'qrcode_image' %}" alt="QR code" class="img-fluid" style="max-width:260px">
+
+  <!-- 圖片展示區 -->
+  <div class="col-12">
+    <div class="qr-box" id="code-box">
+      <!-- 預設顯示 QR；JS 會切換 src -->
+      <img id="code-img" src="{% url 'qrcode_image' %}" alt="會員代碼" class="img-fluid" style="max-width:320px">
     </div>
+    <div class="d-flex justify-content-center gap-2 mt-2">
+      <a id="download-link" class="btn btn-sm btn-outline-dark" href="{% url 'qrcode_image' %}" download="member_qr.png">下載圖片</a>
+      <button id="copy-token" class="btn btn-sm btn-outline-secondary">複製卡號</button>
+    </div>
+    <p class="text-muted small text-center mt-2">卡號：<span id="token-text">{{ member.barcode_token }}</span></p>
   </div>
 
+  <script>
+    (function(){
+      const tabQr = document.getElementById('tab-qr');
+      const tabBc = document.getElementById('tab-barcode');
+      const img   = document.getElementById('code-img');
+      const link  = document.getElementById('download-link');
+      const copy  = document.getElementById('copy-token');
+
+      function setActive(type){
+        const isQR = type === 'qr';
+        img.src  = isQR ? "{% url 'qrcode_image' %}" : "{% url 'barcode_image' %}";
+        link.href = img.src;
+        link.download = isQR ? "member_qr.png" : "member_barcode.png";
+
+        tabQr.classList.toggle('btn-warning', isQR);
+        tabQr.classList.toggle('btn-outline-secondary', !isQR);
+        tabBc.classList.toggle('btn-warning', !isQR);
+        tabBc.classList.toggle('btn-outline-secondary', isQR);
+      }
+
+
+      tabQr.addEventListener('click', () => setActive('qr'));
+      tabBc.addEventListener('click', () => setActive('barcode'));
+      setActive('qr'); // 預設 QR
+
+      copy.addEventListener('click', async () => {
+        const text = document.getElementById('token-text').textContent.trim();
+        try { await navigator.clipboard.writeText(text); alert('已複製卡號'); }
+        catch(e){ alert('複製失敗，請手動選取複製'); }
+      });
+    })();
+  </script>
+
+  
   <!-- 最近交易（保留） -->
   <div class="col-12">
     <div class="cardish">

@@ -65,3 +65,6 @@ body{ background:var(--bg); }
 .qr-box { background:#fff; border-radius: 14px; padding:14px; display:flex; justify-content:center; align-items:center; }
 .bottom-tabs{ position:sticky; bottom:0; background:#fff; border-top:1px solid #eef1f6; }
 .bottom-tabs .tab{ flex:1; text-align:center; padding:10px 6px; font-size:.85rem; color:#6c757d; }
+
+.action-row .btn { min-width: 140px; }
+.qr-box { background:#fff; border-radius:14px; padding:14px; display:flex; justify-content:center; align-items:center; }
