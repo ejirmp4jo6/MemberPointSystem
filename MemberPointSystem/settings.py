@@ -27,6 +27,20 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
 
+# 讓 ngrok 的 HTTPS 被視為可信來源（支援萬用字元）
+CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.app']
+
+# 允許透過 ngrok 存取
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '.ngrok-free.app']
+
+# 告訴 Django：前面有反向代理做了 HTTPS，轉來是 http，但仍視為安全連線
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# （可選，開發期可先不加）
+# SESSION_COOKIE_SECURE = True
+# CSRF_COOKIE_SECURE = True
+# CSRF_COOKIE_SAMESITE = 'Lax'
+
 
 # Application definition
 

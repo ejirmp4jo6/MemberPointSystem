@@ -1,30 +1,208 @@
 {% extends "base.html" %}
 {% block title %}店員累點{% endblock %}
 {% block content %}
+
 <div class="cardish">
   <div class="d-flex justify-content-between align-items-center mb-2">
     <h5 class="mb-0">店員累點</h5>
     <span class="badge-soft">只限店員</span>
   </div>
+
+  <!-- 掃描方式切換 -->
+  <div class="btn-group w-100 mb-2" role="group" aria-label="scanner-tabs">
+    <button type="button" id="tab-qr" class="btn btn-warning">QR 掃描</button>
+    <button type="button" id="tab-bc" class="btn btn-outline-secondary">條碼掃描（Code128）</button>
+  </div>
+
+  <!-- 掃描區 -->
+  <div id="qr-box" class="mb-3" style="display:block;">
+    <div id="qr-reader" style="width:100%; max-width:480px; margin:0 auto;"></div>
+  </div>
+
+  <div id="bc-box" class="mb-3" style="display:none;">
+    <div id="bc-reader" style="width:100%; max-width:480px; margin:0 auto; background:#000; color:#fff; border-radius:8px;">
+      <div class="p-2 text-center">相機啟動中…若無畫面請切到背面鏡頭</div>
+      <canvas class="w-100" id="bc-canvas"></canvas>
+    </div>
+    <div class="d-flex gap-2 justify-content-center mt-2">
+      <button class="btn btn-sm btn-outline-secondary" id="bc-swap">切換鏡頭</button>
+    </div>
+  </div>
+
+  <!-- 表單 -->
   <form method="post" action="{% url 'earn_points' %}" class="row g-3">
     {% csrf_token %}
-    <div class="col-md-6">
+    <div class="col-12">
       <label class="form-label">會員條碼值</label>
-      <input name="barcode_token" class="form-control" placeholder="掃描或貼上 token" required>
-      <div class="form-text">之後可加上相機掃碼自動填入。</div>
+      <input name="barcode_token" id="token-input" class="form-control" placeholder="掃描或貼上 token" required>
+      <div class="form-text">可掃 QR / Code128；或手動貼上。</div>
     </div>
-    <div class="col-md-3">
+    <div class="col-6">
       <label class="form-label">消費金額（TWD）</label>
-      <input name="amount_twd" type="number" min="0" step="1" class="form-control" required>
+      <input name="amount_twd" id="amount-input" type="number" min="0" step="1" class="form-control" required>
     </div>
-    <div class="col-md-12">
+    <div class="col-12">
       <label class="form-label">備註（可選）</label>
       <input name="note" class="form-control" placeholder="例如：外帶咖啡兩杯">
     </div>
     <div class="col-12 d-flex gap-2">
       <button class="btn btn-brand text-white">送出累點</button>
-      <a class="btn btn-outline-secondary" href="{% url 'scan_page' %}">清空重填</a>
+      <a class="btn btn-outline-secondary" href="{% url 'scan_page' %}">清空重掃</a>
     </div>
   </form>
 </div>
+
+<script>
+(function(){
+  // ====== 共用 ======
+  const tokenInput = document.getElementById('token-input');
+  const amountInput = document.getElementById('amount-input');
+  const tabQr = document.getElementById('tab-qr');
+  const tabBc = document.getElementById('tab-bc');
+  const qrBox = document.getElementById('qr-box');
+  const bcBox = document.getElementById('bc-box');
+  const bcSwapBtn = document.getElementById('bc-swap');
+  let activeScanner = 'qr';     // 'qr' or 'bc'
+  let html5Qr = null;
+  let bcStream = null;
+  let bcDeviceIds = []; let bcDeviceIdx = 0;
+
+  function onDetected(text){
+    // 寫入欄位，去空白
+    tokenInput.value = (text || '').trim();
+    // 震動提示（支援裝置）
+    if (navigator.vibrate) navigator.vibrate(80);
+    // 跳到金額欄位
+    amountInput.focus();
+  }
+
+  function setTabs(type){
+    const isQR = type === 'qr';
+    tabQr.classList.toggle('btn-warning', isQR);
+    tabQr.classList.toggle('btn-outline-secondary', !isQR);
+    tabBc.classList.toggle('btn-warning', !isQR);
+    tabBc.classList.toggle('btn-outline-secondary', isQR);
+    qrBox.style.display = isQR ? 'block' : 'none';
+    bcBox.style.display = isQR ? 'none' : 'block';
+  }
+
+  // ====== QR 掃描（html5-qrcode）======
+  async function startQR(){
+    if (html5Qr) return; // 已啟動
+    const opts = {
+      formatsToSupport: [ Html5QrcodeSupportedFormats.QR_CODE ],
+      fps: 10,
+      qrbox: { width: 250, height: 250 },
+      rememberLastUsedCamera: true
+    };
+    html5Qr = new Html5Qrcode("qr-reader");
+    try {
+      await html5Qr.start(
+        { facingMode: "environment" },
+        opts,
+        (decoded) => {
+          stopQR(); onDetected(decoded);
+        },
+        () => {}
+      );
+    } catch (e) {
+      console.error(e);
+      alert("無法啟動相機（行動裝置需 HTTPS 或 localhost）。");
+      stopQR();
+    }
+  }
+  async function stopQR(){
+    if (html5Qr) {
+      try { await html5Qr.stop(); } catch(_){}
+      try { await html5Qr.clear(); } catch(_){}
+      html5Qr = null;
+    }
+  }
+
+  // ====== 條碼掃描（Quagga2）======
+  async function listCameras(){
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    bcDeviceIds = devices.filter(d => d.kind === 'videoinput').map(d => d.deviceId);
+    if (bcDeviceIdx >= bcDeviceIds.length) bcDeviceIdx = 0;
+  }
+  async function startBC(){
+    await listCameras();
+    const deviceId = bcDeviceIds[bcDeviceIdx] || undefined;
+    const constraints = deviceId ? { deviceId: { exact: deviceId } } : { facingMode: "environment" };
+
+    // 先開原生串流以獲取寬高
+    try{
+      bcStream = await navigator.mediaDevices.getUserMedia({ video: constraints, audio:false });
+    } catch(e){
+      console.error(e);
+      alert("無法啟動相機（行動裝置需 HTTPS 或 localhost）。");
+      return;
+    }
+
+    const video = document.createElement('video');
+    video.setAttribute('playsinline', true);
+    video.srcObject = bcStream;
+    await video.play();
+
+    const width = Math.min(window.innerWidth, 480);
+    const height = Math.floor(width * 0.75);
+
+    Quagga.init({
+      inputStream: {
+        type: "LiveStream",
+        target: document.querySelector("#bc-reader"),
+        constraints: { ...constraints, width, height }
+      },
+      decoder: {
+        readers: ["code_128_reader"]  // 你的條碼是 Code128
+      },
+      locate: true,
+      numOfWorkers: 0
+    }, function(err){
+      if (err) { console.error(err); alert("條碼掃描啟動失敗"); return; }
+      Quagga.start();
+    });
+
+    Quagga.onDetected(function(res){
+      const code = (res && res.codeResult && res.codeResult.code) || "";
+      if (code) {
+        stopBC(); onDetected(code);
+      }
+    });
+  }
+  function stopBC(){
+    try { Quagga.offDetected(); Quagga.stop(); } catch(_){}
+    if (bcStream){
+      bcStream.getTracks().forEach(t => t.stop());
+      bcStream = null;
+    }
+  }
+  bcSwapBtn.addEventListener('click', async function(){
+    if (!bcDeviceIds.length) await listCameras();
+    bcDeviceIdx = (bcDeviceIdx + 1) % (bcDeviceIds.length || 1);
+    stopBC(); startBC();
+  });
+
+  // ====== 切換控制 ======
+  tabQr.addEventListener('click', async () => {
+    if (activeScanner === 'qr') return;
+    activeScanner = 'qr'; setTabs('qr'); stopBC(); await startQR();
+  });
+  tabBc.addEventListener('click', async () => {
+    if (activeScanner === 'bc') return;
+    activeScanner = 'bc'; setTabs('bc'); await stopQR(); await startBC();
+  });
+
+  // 預設啟動 QR
+  setTabs('qr');
+  // 稍等庫載入完成
+  window.addEventListener('load', () => {
+    startQR();
+  });
+
+  // 離開頁面時清理相機
+  window.addEventListener('beforeunload', () => { stopQR(); stopBC(); });
+})();
+</script>
+
 {% endblock %}
