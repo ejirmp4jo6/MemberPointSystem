@@ -10,6 +10,7 @@ import qrcode
 from io import BytesIO
 from django.db.models import F
 from django.http import Http404
+from .forms import MemberProfileForm
 
 
 def home(request):
@@ -145,5 +146,21 @@ def point_history(request):
 
 @login_required
 def profile(request):
-    member = request.user.member  # 假設一對一
-    return render(request, 'members/profile.html', {'member': member})
+    member = request.user.member  # 假設已建立 OneToOne
+
+    if request.method == "POST":
+        form = MemberProfileForm(request.POST, instance=member)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "會員資料已更新")
+            return redirect("profile")
+        editing = True
+    else:
+        form = MemberProfileForm(instance=member)
+        editing = False
+
+    return render(request, "members/profile.html", {
+        "member": member,
+        "form": form,
+        "editing": editing,
+    })
