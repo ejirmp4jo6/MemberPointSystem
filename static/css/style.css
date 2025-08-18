@@ -6,24 +6,23 @@
   --card:#ffffff;
   --radius:18px;
   --shadow:0 8px 28px rgba(239, 255, 8, 0.12);
-  /* 新增：底部導覽用 */
-  --tab-bg: var(--brand);                             /* 預設顏色 */
-  --tab-active-bg: color-mix(in srgb, var(--brand) 50%, rgb(255, 255, 0) 50%); /* 高亮 */
-  --tab-text: #fff;
+
+  /* 底部導覽用 */
+  --tab-bg: var(--brand);
+  --tab-active-bg: color-mix(in srgb, var(--brand) 50%, rgb(255, 255, 0) 50%);
+  --tab-text:#fff;
 }
+
 body{ background:var(--bg); }
-.container { max-width: 480px; }     /* 針對手機的閱讀寬度 */
+.container{ max-width:480px; } /* 手機閱讀寬度 */
 
 /* 黑卡區 */
-.blackcard {
-  background:#000;
-  color:#fff;
-  border-radius:24px;
-  padding:22px 18px;
-  box-shadow:var(--shadow);
-  text-align:center;
+.blackcard{
+  background:#000; color:#fff;
+  border-radius:24px; padding:22px 18px;
+  box-shadow:var(--shadow); text-align:center;
 }
-.blackcard .brand { font-weight:800; letter-spacing:.5px; }
+.blackcard .brand{ font-weight:800; letter-spacing:.5px; }
 .blackcard .number{
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
   letter-spacing:.12em; font-size:1.1rem; margin:12px 0 14px;
@@ -31,12 +30,10 @@ body{ background:var(--bg); }
 .blackcard .meta{ display:flex; justify-content:center; gap:36px; font-size:.95rem; opacity:.95; }
 .blackcard .label{ display:block; font-size:.75rem; opacity:.75; }
 
+/* 兌換碼區 */
 .code-panel{
-  background:#fff;
-  border-radius:18px;
-  box-shadow:var(--shadow);
-  padding:14px;
-  text-align:center;
+  background:#fff; border-radius:18px; box-shadow:var(--shadow);
+  padding:14px; text-align:center;
 }
 .code-switch{ display:flex; gap:10px; margin-bottom:10px; }
 .code-switch .btn{ flex:1; border-radius:10px; }
@@ -53,118 +50,51 @@ body{ background:var(--bg); }
 /* 底部分頁（固定於底部） */
 .app-tabs{
   position:fixed; left:0; right:0; bottom:0;
-  background:transparent; /* 讓四個圓角按鈕在卡片上方感覺 */
+  background:transparent;
   padding:6px 10px calc(6px + env(safe-area-inset-bottom));
   display:flex; justify-content:center;
-  z-index: 1000;
+  z-index:1000;
 }
 .app-tabs .tab-wrap{
   width:100%; max-width:480px;
-  display:grid; grid-template-columns: repeat(4, 1fr);
-  gap:0;
+  display:flex; gap:0;
+  border-radius:var(--radius);
+  overflow:hidden;                 /* 用外層包圍來形成左右圓角 */
+  background:var(--tab-bg);
 }
-.tab-btn{
-  background: var(--brand);
-  color:#fff; border:none; border-radius:16px;
-  padding:10px 6px; font-size: clamp(12px, 3vw, 16px); text-align:center;
-  text-decoration:none;
-  margin: 0;              /* 移除外距 */
-  border-radius: 0;       /* 取消圓角，讓它們拼接 */
-  flex: 1; 
-}
-.tab-btn.active{ filter: brightness(.92); }
-main.container{ padding-bottom: 90px; } /* 給底部 tabs 留空間 */
-
-/* 小螢幕微調 */
-@media (max-width: 360px){
-  .blackcard .meta{ gap:20px; }
-}
-
-.token-box{
-  padding: .5rem .75rem;
-  border: 1px solid #e6e9ef;
-  border-radius: .5rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  white-space: nowrap;       /* 單行 */
-  overflow: hidden;          /* 超出隱藏 */
-  text-overflow: ellipsis;   /* 顯示 … */
-}
-
 .app-tabs .tab-btn{
-  background: var(--tab-bg);
-  color: var(--tab-text);
-  padding: 8px 20px;
-  border-radius: 14px;
-  text-decoration: none;
-  display: inline-block;
-  margin: 0;              /* 移除外距 */
-  border-radius: 0;       /* 取消圓角，讓它們拼接 */
-  flex: 1; 
+  flex:1; min-width:0;
+  display:flex; align-items:center; justify-content:center;
+  height:56px; padding:0 12px;
+  background:transparent;          /* 由外層提供底色 */
+  color:var(--tab-text);
+  text-decoration:none; border:0; margin:0; border-radius:0;
+  font-size:clamp(12px, 2.8vw, 16px);
+  white-space:nowrap; line-height:1.1;
 }
-
-.app-tabs .tab-btn.active{
-  background: var(--tab-active-bg);
-  font-weight: 600;
-  box-shadow: inset 0 0 0 2px rgba(255,255,255,.35);
-  margin: 0;              /* 移除外距 */
-  border-radius: 0;       /* 取消圓角，讓它們拼接 */
-  flex: 1; 
-}
-
-/* 先把中間的按鈕都變成直角，靠兩端控制圓角 */
-.tab-btn { border-radius: 0; }
-
-/* 左端/右端維持圓角 */
-.tab-btn:first-child,
-.tab-btn:first-child.active { border-radius: 18px 0 0 18px; }
-
-.tab-btn:last-child,
-.tab-btn:last-child.active  { border-radius: 0 18px 18px 0; }
-
-/* === App tabs：容器 === */
-.app-tabs .tab-wrap{
-  display: flex;
-  gap: 0;
-  border-radius: 18px;        /* 你的圓角保留 */
-  overflow: hidden;           /* 讓左右兩端保持圓角 */
-  background: var(--tab-bg);  /* 保留你的底色變數 */
-}
-
-/* 讓每顆按鈕等分寬度、內容置中、字體動態縮放 */
-.app-tabs .tab-btn{
-  flex: 1;
-  min-width: 0;               /* 讓文字能縮而不是撐開 */
-  display: flex;
-  align-items: center;        /* 垂直置中 */
-  justify-content: center;    /* 水平置中 */
-  height: 56px;               /* 可依你的高度調整 */
-  padding: 0 12px;            /* 保留左右內距 */
-  background: transparent;    /* 用外層底色 */
-  color: var(--tab-text);
-  text-decoration: none;
-  border: 0;
-  margin: 0;
-  border-radius: 0;
-
-  /* 關鍵：動態字級 + 不換行 */
-  font-size: clamp(12px, 2.8vw, 16px);
-  white-space: nowrap;        /* 永遠單行 */
-  line-height: 1.1;
-}
-
-/* 分隔線（如果你原本有空隙，想視覺分隔可以保留） */
 .app-tabs .tab-btn + .tab-btn{
-  border-left: 1px solid rgba(255,255,255,.25);
+  border-left:1px solid rgba(255,255,255,.25); /* 視覺分隔線 */
 }
-
-/* 高亮顏色（沿用你的變數） */
 .app-tabs .tab-btn.active{
-  background: var(--tab-active-bg);
-  color: var(--ink);
-  border-left-color: transparent; /* 高亮時不被分隔線切斷 */
+  background:var(--tab-active-bg);
+  color:var(--ink);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);
+  border-left-color:transparent;
 }
 
-/* 超小螢幕再微調，避免擠壓 */
-@media (max-width: 360px){
-  .app-tabs .tab-btn{ font-size: 12px; padding: 0 8px; }
+/* 主要內容底部留白，避免被 tabs 蓋住 */
+main.container{ padding-bottom:90px; }
+
+/* Token 顯示 */
+.token-box{
+  padding:.5rem .75rem;
+  border:1px solid #e6e9ef; border-radius:.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+
+/* 超小螢幕微調 */
+@media (max-width:360px){
+  .blackcard .meta{ gap:20px; }
+  .app-tabs .tab-btn{ font-size:12px; padding:0 8px; }
 }
