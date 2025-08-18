@@ -4,9 +4,8 @@
 {% load static %}
 
 <div class="row gy-3">
-
   <!-- 會員黑卡區 -->
-  <div class="col-12">
+  <!-- <div class="col-12">
     <div class="blackcard">
       <div class="brand">我的會員卡</div>
       <div class="meta">
@@ -17,6 +16,25 @@
         <div>
           <span class="label">點數</span>
           <div>{{ member.points }}</div>
+        </div>
+      </div>
+    </div>
+  </div> -->
+  <div class="member-card">
+    <div class="card-bg"></div>
+    <div class="card-overlay"></div>
+
+    <div class="card-content">
+      <h5 class="card-title">我的會員卡</h5>
+
+      <div class="row g-3 mt-2">
+        <div class="col">
+          <div class="label">姓名</div>
+          <div class="value">{{ request.user.username }}</div>
+        </div>
+        <div class="col text-end">
+          <div class="label">點數</div>
+          <div class="value">{{ member.points }}</div>
         </div>
       </div>
     </div>

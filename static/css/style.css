@@ -98,3 +98,68 @@ main.container{ padding-bottom:90px; }
   .blackcard .meta{ gap:20px; }
   .app-tabs .tab-btn{ font-size:12px; padding:0 8px; }
 }
+
+/* 會員黑卡：容器 */
+.member-card{
+  position: relative;
+  width: 100%;
+  max-width: 420px;                /* 手機視覺大小 */
+  margin: 12px auto;
+  aspect-ratio: 16 / 9;            /* 固定卡片比例；要更扁用 7/4 或 1.6 */
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,.25);
+}
+
+/* 背景圖 */
+.member-card .card-bg{
+  position: absolute; inset: 0;
+  background-image: url("/static/image/blackcard.jpg");
+  background-size: cover;          /* 等比例填滿 */
+  background-position: center;
+  filter: contrast(1.05) brightness(.9);
+}
+
+/* 透明遮罩：讓字更清楚 */
+.member-card .card-overlay{
+  position: absolute; inset: 0;
+  background: radial-gradient(60% 70% at 50% 35%,
+              rgba(0,0,0,.15), rgba(0,0,0,.55) 70%);
+}
+
+/* 內容排版 */
+.member-card .card-content{
+  position: relative;              /* 疊在背景上方 */
+  z-index: 1;
+  height: 100%;
+  padding: 18px 22px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-shadow: 0 1px 2px rgba(0,0,0,.5);
+}
+
+.member-card .card-title{
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-align: center;
+  font-size: clamp(16px, 4vw, 22px);
+}
+
+.member-card .label{
+  opacity: .85;
+  font-size: clamp(12px, 2.8vw, 14px);
+}
+
+.member-card .value{
+  font-weight: 600;
+  font-size: clamp(16px, 4.2vw, 22px);
+  letter-spacing: .02em;
+}
+
+/* 超小螢幕微調內距 */
+@media (max-width: 360px){
+  .member-card .card-content{ padding: 14px 16px; }
+}
