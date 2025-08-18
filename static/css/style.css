@@ -66,7 +66,7 @@ body{ background:var(--bg); }
 .tab-btn{
   background: var(--brand);
   color:#fff; border:none; border-radius:16px;
-  padding:10px 6px; font-size:.9rem; text-align:center;
+  padding:10px 6px; font-size: clamp(12px, 3vw, 16px); text-align:center;
   text-decoration:none;
   margin: 0;              /* 移除外距 */
   border-radius: 0;       /* 取消圓角，讓它們拼接 */
@@ -120,3 +120,51 @@ main.container{ padding-bottom: 90px; } /* 給底部 tabs 留空間 */
 
 .tab-btn:last-child,
 .tab-btn:last-child.active  { border-radius: 0 18px 18px 0; }
+
+/* === App tabs：容器 === */
+.app-tabs .tab-wrap{
+  display: flex;
+  gap: 0;
+  border-radius: 18px;        /* 你的圓角保留 */
+  overflow: hidden;           /* 讓左右兩端保持圓角 */
+  background: var(--tab-bg);  /* 保留你的底色變數 */
+}
+
+/* 讓每顆按鈕等分寬度、內容置中、字體動態縮放 */
+.app-tabs .tab-btn{
+  flex: 1;
+  min-width: 0;               /* 讓文字能縮而不是撐開 */
+  display: flex;
+  align-items: center;        /* 垂直置中 */
+  justify-content: center;    /* 水平置中 */
+  height: 56px;               /* 可依你的高度調整 */
+  padding: 0 12px;            /* 保留左右內距 */
+  background: transparent;    /* 用外層底色 */
+  color: var(--tab-text);
+  text-decoration: none;
+  border: 0;
+  margin: 0;
+  border-radius: 0;
+
+  /* 關鍵：動態字級 + 不換行 */
+  font-size: clamp(12px, 2.8vw, 16px);
+  white-space: nowrap;        /* 永遠單行 */
+  line-height: 1.1;
+}
+
+/* 分隔線（如果你原本有空隙，想視覺分隔可以保留） */
+.app-tabs .tab-btn + .tab-btn{
+  border-left: 1px solid rgba(255,255,255,.25);
+}
+
+/* 高亮顏色（沿用你的變數） */
+.app-tabs .tab-btn.active{
+  background: var(--tab-active-bg);
+  color: var(--ink);
+  border-left-color: transparent; /* 高亮時不被分隔線切斷 */
+}
+
+/* 超小螢幕再微調，避免擠壓 */
+@media (max-width: 360px){
+  .app-tabs .tab-btn{ font-size: 12px; padding: 0 8px; }
+}

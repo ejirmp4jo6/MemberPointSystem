@@ -38,16 +38,27 @@
       <div class="form-text">點右邊相機圖示即可開啟鏡頭掃描。</div>
     </div>
 
+    <div class="btn-group w-100 mb-2" role="group" aria-label="加扣點">
+      <input type="radio" class="btn-check" name="mode" id="mode-earn" value="earn" checked>
+      <label class="btn btn-outline-success" for="mode-earn">加點</label>
+
+      <input type="radio" class="btn-check" name="mode" id="mode-deduct" value="deduct">
+      <label class="btn btn-outline-danger" for="mode-deduct">扣點</label>
+    </div>
+
     <div class="col-6">
       <label class="form-label">消費金額（TWD）</label>
       <input name="amount_twd" id="amount-input" type="number" min="0" step="1" class="form-control" required>
     </div>
+    
     <div class="col-12">
       <label class="form-label">備註（可選）</label>
       <input name="note" class="form-control" placeholder="例如：外帶咖啡兩杯">
     </div>
     <div class="col-12 d-flex gap-2">
-      <button class="btn btn-brand text-white">送出累點</button>
+      <button type="submit" class="btn btn-brand">
+      <i class="bi bi-send me-1"></i> 送出
+      </button>
       <a class="btn btn-outline-secondary" href="{% url 'scan_page' %}">清空重掃</a>
     </div>
   </form>
@@ -56,3 +67,4 @@
 <script src="{% static 'js/scan.js' %}"></script>
 
 {% endblock %}
+{% block app_tabs %}{% endblock %}

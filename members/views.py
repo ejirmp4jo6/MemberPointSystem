@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Member, PointTransaction
 import qrcode
 from io import BytesIO
+from django.db.models import F
 from django.http import Http404
 
 
@@ -71,28 +72,45 @@ def scan_page(request):
 
 @login_required
 def earn_points(request):
-    if not (request.user.is_staff or request.user.is_superuser):
-        raise PermissionDenied
     if request.method != 'POST':
-        return HttpResponseForbidden('POST only')
-    token = (request.POST.get('barcode_token') or '').strip()
-    amount_twd = int(request.POST.get('amount_twd') or 0)
-    note = request.POST.get('note', '')
-    points = amount_twd // 20
-
-    try:
-        member = Member.objects.get(barcode_token=token)
-    except Member.DoesNotExist:
-        messages.error(request, '找不到此會員')
         return redirect('scan_page')
 
+    token = request.POST.get('barcode_token', '').strip()
+    try:
+        amount = int(request.POST.get('amount_twd', '0'))
+    except ValueError:
+        messages.error(request, '金額格式錯誤')
+        return redirect('scan_page')
+
+    mode = request.POST.get('mode', 'earn')  # 'earn' or 'deduct'
+    note = request.POST.get('note', '').strip()
+
+    if amount <= 0:
+        messages.error(request, '金額必須為正數')
+        return redirect('scan_page')
+
+    try:
+        m = Member.objects.get(barcode_token=token)
+    except Member.DoesNotExist:
+        messages.error(request, '找不到會員')
+        return redirect('scan_page')
+
+    # 兌換比率自行套用：這裡示範 1 元 = 0.05 點
+    pts = round(amount * 0.05)
+
+    delta = pts if mode == 'earn' else -pts
+    txn_type = PointTransaction.EARN if mode == 'earn' else PointTransaction.ADJUST
+
     PointTransaction.objects.create(
-        member=member, txn_type=PointTransaction.EARN, amount=points,
-        note=note or f'消費 NT${amount_twd}', staff=request.user
+        member=m, txn_type=txn_type, amount=delta,
+        note=note or ('扣點' if delta < 0 else '加點'),
+        staff=request.user
     )
-    member.points += points
-    member.save()
-    messages.success(request, f'已為 {member.user.username} 累積 {points} 點（NT${amount_twd}）')
+
+    Member.objects.filter(pk=m.pk).update(points=F('points') + delta)
+    m.refresh_from_db()
+
+    messages.success(request, f"{'加' if delta>0 else '扣'}點成功，已為您{'新增' if delta>0 else '扣除'}：{pts}點")
     return redirect('scan_page')
 
 @login_required

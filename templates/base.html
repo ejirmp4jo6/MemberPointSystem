@@ -42,15 +42,17 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <!-- 底部固定分頁 -->
-<div class="app-tabs">
-  <div class="tab-wrap">
-    {% with current=request.resolver_match.url_name %}
-      <a class="tab-btn {% if current == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">我的黑卡</a>
-      <a class="tab-btn" href="https://shop.ichefpos.com/store/Al0mfcsy/ordering" target="_blank" rel="noopener">點餐</a>
-      <a class="tab-btn {% if current == 'point_history' %}active{% endif %}" href="{% url 'point_history' %}">點數紀錄</a>
-      <a class="tab-btn {% if current == 'profile' %}active{% endif %}" href="{% url 'profile' %}">個人資料</a>
-    {% endwith %}
+ {% block app_tabs %}
+  <div class="app-tabs">
+    <div class="tab-wrap">
+      {% with current=request.resolver_match.url_name %}
+        <a class="tab-btn {% if current == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}">我的會員卡</a>
+        <a class="tab-btn" href="https://shop.ichefpos.com/store/Al0mfcsy/ordering" target="_blank" rel="noopener">點餐</a>
+        <a class="tab-btn {% if current == 'point_history' %}active{% endif %}" href="{% url 'point_history' %}">點數紀錄</a>
+        <a class="tab-btn {% if current == 'profile' %}active{% endif %}" href="{% url 'profile' %}">個人資料</a>
+      {% endwith %}
+    </div>
   </div>
-</div>
+{% endblock %}
 </body>
 </html>
