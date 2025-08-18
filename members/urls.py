@@ -9,4 +9,6 @@ urlpatterns = [
     path('scan/', views.scan_page, name='scan_page'),          # 店員掃描頁（相機或手動輸入）
     path('earn/', views.earn_points, name='earn_points'),      # 店員提交累點
     path('qr/', views.qrcode_image, name='qrcode_image'),
+    path('points/', views.point_history, name='point_history'),  # 新增
+    path('profile/', views.profile, name='profile'),
 ]

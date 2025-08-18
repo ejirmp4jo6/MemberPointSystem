@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}個人資料{% endblock %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-3">
+
+  <div class="card shadow-sm p-3 mb-3">
+    <h5 class="mb-2">個人資料</h5>
+    <div class="row">
+      <div class="col-12">
+        <div class="mb-2"><span class="text-muted">暱稱：</span>{{ member.display_name|default:user.username }}</div>
+        <div class="mb-2"><span class="text-muted">目前點數：</span>{{ member.points }}</div>
+      </div>
+    </div>
+  </div>
+
+	<div class="container mt-3">
+		<div class="card shadow-sm p-3">
+			<h6 class="mb-2">會員卡號</h6>
+
+			<div class="d-flex align-items-center gap-2">
+				<!-- 視覺上單行、超出省略 -->
+				<div class="token-box flex-grow-1"
+						title="{{ member.barcode_token }}">
+					{{ member.barcode_token }}
+				</div>
+
+				<!-- 複製按鈕：用 data-token 放完整卡號 -->
+				<button id="copy-token"
+						type="button"
+						class="btn btn-outline-secondary btn-sm"
+						data-token="{{ member.barcode_token }}"
+						onclick="copyToken(this)"
+						aria-label="複製卡號">
+						<i class="bi bi-copy"></i>
+				</button>
+			</div>
+		</div>
+	</div>
+
+</div>
+<script src="{% static 'js/profile.js' %}"></script>
+{% endblock %}

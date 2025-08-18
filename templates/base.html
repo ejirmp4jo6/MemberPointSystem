@@ -16,13 +16,11 @@
 
 <nav class="navbar navbar-expand-lg bg-white">
   <div class="container">
-    <a class="navbar-brand" href="/">MemberPointSystem</a>
+    <a class="navbar-brand" href="/">ZUBIBA 尊比巴咖啡調飲店</a>
     <div class="ms-auto d-flex gap-2">
       {% if user.is_authenticated %}
         {% if user.is_staff or user.is_superuser %}
           <a class="btn btn-warning btn-sm" href="{% url 'scan_page' %}">店員累點</a>
-        {% else %}
-          <a class="btn btn-outline-primary btn-sm" href="{% url 'dashboard' %}">我的點數</a>
         {% endif %}
         <a class="btn btn-outline-secondary btn-sm" href="{% url 'logout' %}">登出</a>
       {% else %}
@@ -42,10 +40,15 @@
   {% block content %}{% endblock %}
 </main>
 
-<footer class="container py-4">
-  <div class="footer-muted">© {{ now|date:"Y" }} MemberPointSystem</div>
-</footer>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- 底部固定分頁 -->
+<div class="app-tabs">
+  <div class="tab-wrap">
+    <a class="tab-btn active" href="{% url 'dashboard' %}">我的黑卡</a>
+    <a class="tab-btn" href="https://shop.ichefpos.com/store/Al0mfcsy/ordering" target="_blank" rel="noopener">點餐</a>
+    <a class="tab-btn" href="{% url 'point_history' %}">點數紀錄</a>
+    <a class="tab-btn" href="{% url 'profile' %}">個人資料</a>  <!-- 可日後導到真正的個資頁 -->
+  </div>
+</div>
 </body>
 </html>

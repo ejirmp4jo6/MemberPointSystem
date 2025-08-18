@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}點數紀錄{% endblock %}
+
+{% block content %}
+<div class="container mt-3">
+  <h4 class="mb-3">點數紀錄</h4>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>日期</th>
+        <th>類型</th>
+        <th class="text-end">點數</th>
+        <th>備註</th>
+        <th>處理人員</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td>{{ r.created_at|date:"Y-m-d H:i" }}</td>
+        <td>{{ r.get_txn_type_display }}</td>
+        <td class="text-end">
+          {% if r.amount > 0 %}+{% endif %}{{ r.amount }}
+        </td>
+        <td>{{ r.note|default:"-" }}</td>
+        <td>{% if r.staff %}{{ r.staff.username }}{% else %}-{% endif %}</td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="5" class="text-center text-muted">目前沒有紀錄</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}

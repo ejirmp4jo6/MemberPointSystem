@@ -72,3 +72,26 @@ main.container{ padding-bottom: 90px; } /* 給底部 tabs 留空間 */
 @media (max-width: 360px){
   .blackcard .meta{ gap:20px; }
 }
+
+.token-box{
+  padding: .5rem .75rem;
+  border: 1px solid #e6e9ef;
+  border-radius: .5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space: nowrap;       /* 單行 */
+  overflow: hidden;          /* 超出隱藏 */
+  text-overflow: ellipsis;   /* 顯示 … */
+}
+
+.nav-btn {
+  background-color: #075a66;  /* 預設深藍綠 */
+  color: white;
+  border-radius: 12px;
+  padding: 6px 16px;
+  text-decoration: none;
+}
+
+.nav-btn.active {
+  background-color: #0d9488; /* 高亮顏色 (亮藍綠) */
+  font-weight: bold;
+}

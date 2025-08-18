@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Member, PointTransaction
 import qrcode
 from io import BytesIO
+from django.http import Http404
 
 
 def home(request):
@@ -108,3 +109,23 @@ def qrcode_image(request):
     buf = BytesIO()
     img.save(buf, format="PNG")
     return HttpResponse(buf.getvalue(), content_type="image/png")
+
+@login_required
+def point_history(request):
+    try:
+        member = request.user.member
+    except Member.DoesNotExist:
+        raise Http404("尚未綁定會員")
+
+    records = (
+        PointTransaction.objects
+        .filter(member=member)
+        .select_related('staff')         # 顯示處理人員時比較省查詢
+        .order_by('-created_at')
+    )
+    return render(request, 'members/points.html', {'records': records})
+
+@login_required
+def profile(request):
+    member = request.user.member  # 假設一對一
+    return render(request, 'members/profile.html', {'member': member})

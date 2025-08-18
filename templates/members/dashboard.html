@@ -9,7 +9,6 @@
   <div class="col-12">
     <div class="blackcard">
       <div class="brand">會員黑卡區</div>
-      <div class="number">{{ member.barcode_token }}</div>
       <div class="meta">
         <div>
           <span class="label">Card Holder</span>
@@ -37,36 +36,6 @@
         <a id="download-link" class="btn btn-sm btn-outline-dark" href="{% url 'qrcode_image' %}" download="member_qr.png">下載圖片</a>
       </div>
     </div>
-  </div>
-
-  <!-- 點數紀錄（簡版，供下方分頁「點數紀錄」跳錨） -->
-  <div class="col-12" id="records">
-    <div class="cardish">
-      <h6 class="mb-2">點數紀錄</h6>
-      <ul class="list-group list-group-flush">
-        {% for t in txns %}
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span class="text-muted">{{ t.created_at|date:"Y-m-d H:i" }}｜{{ t.note }}</span>
-            <strong class="{% if t.amount > 0 %}text-success{% else %}text-danger{% endif %}">
-              {% if t.amount > 0 %}+{% endif %}{{ t.amount }}
-            </strong>
-          </li>
-        {% empty %}
-          <li class="list-group-item text-muted">尚無紀錄</li>
-        {% endfor %}
-      </ul>
-    </div>
-  </div>
-
-</div>
-
-<!-- 底部固定分頁 -->
-<div class="app-tabs">
-  <div class="tab-wrap">
-    <a class="tab-btn active" href="#top">會員卡</a>
-    <a class="tab-btn" href="https://shop.ichefpos.com/store/Al0mfcsy/ordering" target="_blank" rel="noopener">點餐</a>
-    <a class="tab-btn" href="#records">點數紀錄</a>
-    <a class="tab-btn" href="{% url 'dashboard' %}#profile">個人資料</a>  <!-- 可日後導到真正的個資頁 -->
   </div>
 </div>
 

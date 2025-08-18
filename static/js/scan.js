@@ -48,6 +48,4 @@ document.addEventListener('DOMContentLoaded', function () {
   // 離開頁面時關閉相機
   window.addEventListener('beforeunload', stopScanner);
 
-  //（可選）如果你想一進頁就自動啟動掃描：
-  // startScanner();
 });
