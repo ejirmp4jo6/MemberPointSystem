@@ -11,7 +11,9 @@ from io import BytesIO
 from django.db.models import F
 from django.http import Http404
 from .forms import MemberProfileForm
-
+import math
+from .utils import get_loyalty_config
+from django.core.paginator import Paginator
 
 def home(request):
     return render(request, 'home.html')
@@ -47,24 +49,6 @@ def dashboard(request):
     txns = member.txns.all()[:10]
     return render(request, 'members/dashboard.html', {'member': member, 'txns': txns})
 
-# # 條碼圖片：目前用不到
-# from barcode import Code128
-# from barcode.writer import ImageWriter
-# from io import BytesIO
-
-# @login_required
-# def barcode_image(request):
-#     if request.user.is_staff or request.user.is_superuser:
-#         raise PermissionDenied  # 店員不該有條碼
-#     member = get_object_or_404(Member, user=request.user)
-#     value = member.barcode_token
-#     buf = BytesIO()
-#     Code128(value, writer=ImageWriter()).write(buf, options={
-#         'module_width': 0.2, 'module_height': 12, 'font_size': 10, 'text': value
-#     })
-#     return HttpResponse(buf.getvalue(), content_type='image/png')
-
-# --- 店員累點頁（你之前已加 403 保護，保留即可） ---
 @login_required
 def scan_page(request):
     if not (request.user.is_staff or request.user.is_superuser):
@@ -76,16 +60,17 @@ def earn_points(request):
     if request.method != 'POST':
         return redirect('scan_page')
 
-    token = request.POST.get('barcode_token', '').strip()
-    try:
-        amount = int(request.POST.get('amount_twd', '0'))
-    except ValueError:
-        messages.error(request, '金額格式錯誤')
-        return redirect('scan_page')
-
+    token = (request.POST.get('barcode_token') or '').strip()
+    # 你之前有用過 amount / amount_twd 兩種 name，這裡兩個都接
+    raw_amount = (request.POST.get('amount') or request.POST.get('amount_twd') or '').strip()
     mode = request.POST.get('mode', 'earn')  # 'earn' or 'deduct'
-    note = request.POST.get('note', '').strip()
+    note = (request.POST.get('note') or '').strip()
 
+    try:
+        amount = int(raw_amount)
+    except ValueError:
+        messages.error(request, f'金額格式錯誤：「{raw_amount}」')
+        return redirect('scan_page')
     if amount <= 0:
         messages.error(request, '金額必須為正數')
         return redirect('scan_page')
@@ -96,23 +81,58 @@ def earn_points(request):
         messages.error(request, '找不到會員')
         return redirect('scan_page')
 
-    # 兌換比率自行套用：這裡示範 1 元 = 0.05 點
-    pts = round(amount * 0.05)
+    cfg = get_loyalty_config()
+    # cfg.earn_spend_unit            # 例：100
+    # cfg.earn_points_per_unit       # 例：1
+    # cfg.redeem_value_per_point     # 例：1
 
-    delta = pts if mode == 'earn' else -pts
-    txn_type = PointTransaction.EARN if mode == 'earn' else PointTransaction.ADJUST
+    if mode == 'earn':
+        # 每 earn_spend_unit 元 → earn_points_per_unit 點；不足單位捨去
+        units = amount // cfg.earn_spend_unit
+        pts = units * cfg.earn_points_per_unit
 
-    PointTransaction.objects.create(
-        member=m, txn_type=txn_type, amount=delta,
-        note=note or ('扣點' if delta < 0 else '加點'),
-        staff=request.user
-    )
+        if pts <= 0:
+            messages.info(request, f"本次金額未達 {cfg.earn_spend_unit} 元門檻，未累點。")
+            return redirect('scan_page')
 
-    Member.objects.filter(pk=m.pk).update(points=F('points') + delta)
-    m.refresh_from_db()
+        PointTransaction.objects.create(
+            member=m,
+            txn_type=PointTransaction.EARN,
+            amount=pts,  # 交易 amount 存「點數變動量」
+            note=note or f"消費{units * cfg.earn_spend_unit}元（{cfg.earn_spend_unit}元=+{cfg.earn_points_per_unit}點）",
+            staff=request.user
+        )
+        Member.objects.filter(pk=m.pk).update(points=F('points') + pts)
+        m.refresh_from_db()
+        messages.success(request, f"加點 +{pts}，目前點數：{m.points}")
+        return redirect('scan_page')
 
-    messages.success(request, f"{'加' if delta>0 else '扣'}點成功，已為您{'新增' if delta>0 else '扣除'}：{pts}點")
-    return redirect('scan_page')
+    else:  # mode == 'deduct'（折抵）
+        # 想折抵 amount 元 → 所需點數 = ceil(amount / 每點折抵元)
+        need_pts = math.ceil(amount / cfg.redeem_value_per_point)
+        if m.points <= 0:
+            messages.error(request, '會員目前沒有可用點數')
+            return redirect('scan_page')
+
+        use_pts = min(m.points, need_pts)  # 不能超過現有點數
+        discount_twd = use_pts * cfg.redeem_value_per_point
+
+        if use_pts <= 0:
+            messages.error(request, '折抵金額必須 > 0')
+            return redirect('scan_page')
+
+        PointTransaction.objects.create(
+            member=m,
+            txn_type=PointTransaction.ADJUST,  # 你既有的扣點/調整類型
+            amount=-use_pts,                   # 交易 amount 存「點數變動量」（負數）
+            note=note or f"折抵{discount_twd}元（1點={cfg.redeem_value_per_point}元）",
+            staff=request.user
+        )
+        Member.objects.filter(pk=m.pk).update(points=F('points') - use_pts)
+        m.refresh_from_db()
+        messages.success(request, f"成功折抵 {discount_twd} 元，扣點 -{use_pts}，剩餘點數：{m.points}")
+        return redirect('scan_page')
+
 
 @login_required
 def qrcode_image(request):
@@ -131,18 +151,19 @@ def qrcode_image(request):
 
 @login_required
 def point_history(request):
-    try:
-        member = request.user.member
-    except Member.DoesNotExist:
-        raise Http404("尚未綁定會員")
+    member = request.user.member
+    qs = (PointTransaction.objects
+          .filter(member=member)
+          .order_by('-created_at')
+          .only('id', 'amount', 'created_at'))  # 只取需要欄位（見下條）
 
-    records = (
-        PointTransaction.objects
-        .filter(member=member)
-        .select_related('staff')         # 顯示處理人員時比較省查詢
-        .order_by('-created_at')
-    )
-    return render(request, 'members/points.html', {'records': records})
+    paginator = Paginator(qs, 30)          # 每頁 30 筆
+    page_obj = paginator.get_page(request.GET.get('page'))
+
+    return render(request, 'members/points.html', {
+        'page_obj': page_obj,
+        'records': page_obj.object_list,   # 舊模板沿用 records
+    })
 
 @login_required
 def profile(request):

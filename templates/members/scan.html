@@ -47,10 +47,10 @@
     </div>
 
     <div class="col-6">
-      <label class="form-label">消費金額（TWD）</label>
+      <label id="amount-label" class="form-label">消費金額（TWD）</label>
       <input name="amount_twd" id="amount-input" type="number" min="0" step="1" class="form-control" required>
     </div>
-    
+
     <div class="col-12">
       <label class="form-label">備註（可選）</label>
       <input name="note" class="form-control" placeholder="例如：外帶咖啡兩杯">
@@ -65,6 +65,6 @@
 </div>
 
 <script src="{% static 'js/scan.js' %}"></script>
-
+<script src="{% static 'js/scan_typeSwitch.js' %}"></script>
 {% endblock %}
 {% block app_tabs %}{% endblock %}
