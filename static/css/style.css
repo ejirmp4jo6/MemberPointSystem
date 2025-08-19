@@ -136,6 +136,17 @@ main.container{ padding-bottom:90px; }
   .member-card .card-content{ padding:14px 16px; }
 }
 
+/* 會員卡：讓「姓名/點數」這一列往中間靠一點 */
+.member-card .info-row{
+  max-width: 82%;      /* 縮小這一列的寬度 */
+  margin: 8px auto 0;  /* 置中 */
+}
+
+/* 超小螢幕再放寬一點，避免擠到換行 */
+@media (max-width: 360px){
+  .member-card .info-row{ max-width: 88%; }
+}
+
 /* ==== 列表樣式（個資頁） ==== */
 .list-group{ border-radius:12px; overflow:hidden; }
 .list-group-item{ padding:12px 16px; }
