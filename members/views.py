@@ -14,6 +14,8 @@ from .forms import MemberProfileForm
 import math
 from .utils import get_loyalty_config
 from django.core.paginator import Paginator
+from django.http import JsonResponse
+from django.views.decorators.http import require_GET
 
 def home(request):
     return render(request, 'home.html')
@@ -51,9 +53,10 @@ def dashboard(request):
 
 @login_required
 def scan_page(request):
-    if not (request.user.is_staff or request.user.is_superuser):
-        raise PermissionDenied
-    return render(request, 'members/scan.html')
+    cfg = get_loyalty_config()
+    return render(request, 'members/scan.html', {
+        'redeem_per_point': cfg.redeem_value_per_point,
+    })
 
 @login_required
 def earn_points(request):
@@ -184,4 +187,25 @@ def profile(request):
         "member": member,
         "form": form,
         "editing": editing,
+    })
+
+@login_required
+@require_GET
+def api_member_by_token(request):
+    token = (request.GET.get('token') or '').strip()
+    if not token:
+        return JsonResponse({'ok': False, 'error': 'empty token'}, status=400)
+
+    try:
+        m = Member.objects.only('id', 'points', 'display_name').get(barcode_token=token)
+    except Member.DoesNotExist:
+        return JsonResponse({'ok': False, 'error': 'not found'}, status=404)
+
+    cfg = get_loyalty_config()
+    return JsonResponse({
+        'ok': True,
+        'display_name': m.display_name or request.user.username,
+        'points': m.points,
+        'redeem_value_per_point': cfg.redeem_value_per_point,
+        'max_redeem_twd': m.points * cfg.redeem_value_per_point,
     })

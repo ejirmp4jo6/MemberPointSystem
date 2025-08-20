@@ -49,6 +49,13 @@
     <div class="col-6">
       <label id="amount-label" class="form-label">消費金額（TWD）</label>
       <input name="amount_twd" id="amount-input" type="number" min="0" step="1" class="form-control" required>
+      <div class="d-flex justify-content-between align-items-center mt-1">
+        <small id="deduct-hint" class="text-muted">本次可折抵上限：—</small>
+        <button type="button" id="btn-redeem-all"
+                class="btn btn-outline-danger btn-sm" disabled>全部折抵</button>
+      </div>
+      <input type="hidden" id="member-api-url" value="{% url 'api_member_by_token' %}">
+      <input type="hidden" id="redeem-per-point" value="{{ redeem_per_point }}">
     </div>
 
     <div class="col-12">
@@ -66,5 +73,6 @@
 
 <script src="{% static 'js/scan.js' %}"></script>
 <script src="{% static 'js/scan_typeSwitch.js' %}"></script>
+<script src="{% static 'js/scan_redeem_hint.js' %}"></script>
 {% endblock %}
 {% block app_tabs %}{% endblock %}

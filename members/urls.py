@@ -11,4 +11,5 @@ urlpatterns = [
     path('qr/', views.qrcode_image, name='qrcode_image'),
     path('points/', views.point_history, name='point_history'),  # 新增
     path('profile/', views.profile, name='profile'),
+    path('api/member_by_token/', views.api_member_by_token, name='api_member_by_token'),
 ]
