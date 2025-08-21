@@ -16,6 +16,11 @@ from .utils import get_loyalty_config
 from django.core.paginator import Paginator
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
+import json
+import requests
+from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.views.decorators.csrf import csrf_exempt
 
 def home(request):
     return render(request, 'home.html')
@@ -209,3 +214,96 @@ def api_member_by_token(request):
         'redeem_value_per_point': cfg.redeem_value_per_point,
         'max_redeem_twd': m.points * cfg.redeem_value_per_point,
     })
+
+# ========= LINE / LIFF 登入相關 =========
+
+User = get_user_model()
+LINE_VERIFY_EP = "https://api.line.me/oauth2/v2.1/verify"
+
+def liff_entry(request):
+    """
+    LIFF 入口頁：前端會載入 LIFF SDK，自動做 LINE Login，拿到 id_token 後打後端 /auth/line/liff/
+    """
+    return render(request, "members/liff_entry.html", {"liff_id": settings.LINE_LIFF_ID})
+
+def _verify_id_token(id_token: str):
+    """
+    呼叫 LINE 官方 verify 端點，驗證 id_token，成功會回 payload（含 sub/name/picture/email）
+    """
+    try:
+        r = requests.post(LINE_VERIFY_EP, data={
+            "id_token": id_token,
+            "client_id": settings.LINE_LOGIN_CHANNEL_ID,
+        }, timeout=5)
+        if r.status_code != 200:
+            return None
+        return r.json()
+    except requests.RequestException:
+        return None
+
+@csrf_exempt  # 若前端沒帶 CSRF token，開發期先豁免；上線可改為更嚴謹作法
+def line_liff_auth(request):
+    """
+    前端把 LIFF 取得的 id_token 傳進來：
+    1) 驗證 id_token → 取出 line_user_id（payload['sub']）
+    2) 綁定/建立本地 Member(User) 檔
+    3) login() 成功後回應 next_url（首登或資料不完整 → /members/profile/；否則 /members/dashboard/）
+    """
+    if request.method != "POST":
+        return HttpResponseBadRequest("POST only")
+
+    try:
+        data = json.loads(request.body.decode("utf-8"))
+    except Exception:
+        return JsonResponse({"error": "bad_request"}, status=400)
+
+    id_token = data.get("id_token")
+    display_name = (data.get("display_name") or "").strip()
+    picture_url = (data.get("picture_url") or "").strip()
+
+    payload = _verify_id_token(id_token)
+    if not payload:
+        return JsonResponse({"error": "invalid_token"}, status=401)
+
+    line_user_id = payload.get("sub")  # LINE 使用者唯一識別碼
+    email = payload.get("email")  # 若 scope 有 email
+
+    # 看看是否已經綁過
+    member = Member.objects.filter(line_user_id=line_user_id).select_related("user").first()
+    first_login = False
+
+    if member:
+        user = member.user
+        # 可選：同步暱稱/頭像（依你的欄位命名調整）
+        if display_name and member.display_name != display_name:
+            member.display_name = display_name
+        # 若你的 Member 有 avatar 欄位可在此更新
+        member.save()
+    else:
+        # 沒綁過 → 建 User + Member
+        username = f"line_{line_user_id[:20]}"
+        user = User.objects.create_user(username=username, email=email or "")
+        member = Member.objects.create(
+            user=user,
+            line_user_id=line_user_id,
+            display_name=display_name
+        )
+        first_login = True
+
+    # 建立 Django session
+    login(request, user)
+
+    # 判斷是否導向個資頁（你有 MemberProfileForm；這裡用「缺 phone 或首次登入」作為未完成個資的判斷）
+    phone = getattr(member, "phone", "")  # 你的 Member 若無 phone 欄位，不會出錯
+    if first_login or not (member.display_name and phone):
+        next_url = "/members/profile/"
+    else:
+        next_url = "/members/dashboard/"
+
+    return JsonResponse({"ok": True, "next_url": next_url})
+
+def line_oauth_callback(request):
+    """
+    外部瀏覽器用的 OAuth code flow callback（目前先不用，避免 404，回首頁即可）
+    """
+    return redirect('/')

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"></head>
+<body>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+<script>
+(async () => {
+  const LIFF_ID = "{{ liff_id }}";
+  await liff.init({ liffId: LIFF_ID });
+  if (!liff.isLoggedIn()) { liff.login({ redirectUri: location.href }); return; }
+  const idToken = liff.getIDToken();
+  const profile = await liff.getProfile();
+  const resp = await fetch("/members/auth/line/liff/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify({
+      id_token: idToken,
+      display_name: profile.displayName,
+      picture_url: profile.pictureUrl || ""
+    })
+  });
+  const data = await resp.json();
+  location.href = (data && data.next_url) ? data.next_url : "/";
+})();
+</script>
+</body>
+</html>

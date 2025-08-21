@@ -12,4 +12,7 @@ urlpatterns = [
     path('points/', views.point_history, name='point_history'),  # 新增
     path('profile/', views.profile, name='profile'),
     path('api/member_by_token/', views.api_member_by_token, name='api_member_by_token'),
+    path('liff-entry/', views.liff_entry, name='liff_entry'),
+    path('auth/line/liff/', views.line_liff_auth, name='line_liff_auth'),
+    path('line/callback/', views.line_oauth_callback, name='line_oauth_callback'),
 ]

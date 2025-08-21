@@ -180,4 +180,28 @@ main.container{ padding-bottom:90px; }
   background:#f5f7fa; color:#1f2d3d;
 }
 
-/*（已移除舊的 .save-btn，避免與 .btn-brand 打架）*/
+/* 會員卡：姓名單行省略，避免中文被硬切 */
+.member-name {
+  display: inline-block;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: keep-all;   /* 中文不要在任意字元處換行 */
+}
+/* 讓姓名欄能在 flex 內縮，否則子元素的省略號不生效 */
+.member-card .name-col{ min-width: 0; }
+
+/* 姓名：單行省略，避免中文被硬切（以權重穩壓） */
+.member-card .member-name{
+  display: block;
+  max-width: 100%;
+  white-space: nowrap !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: normal !important;     /* 取消任何 break-all */
+  overflow-wrap: normal !important;  /* 取消 anywhere/break-word */
+}
+
+/* 放寬整列寬度，避免太擠 */
+.member-card .info-row{ max-width: 92%; }  /* 原本 82%，你也可設到 100% 看版面 */

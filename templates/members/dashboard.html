@@ -10,15 +10,20 @@
 
     <div class="card-content">
       <h5 class="card-title">我的會員卡</h5>
-
-      <div class="row g-3 mt-2 info-row">
-        <div class="col text-center">
+      <div class="row g-3 mt-2 info-row align-items-center">
+        <div class="col name-col text-start">
           <div class="label">姓名</div>
-          <div class="value">{{ request.user.username }}</div>
+          <div class="value">
+            <span class="member-name"
+                  title="{% firstof member.display_name user.first_name user.get_full_name user.username %}">
+              {% firstof member.display_name user.first_name user.get_full_name user.username %}
+            </span>
+          </div>
         </div>
-        <div class="col text-end text-center">
+
+        <div class="col-auto text-end">
           <div class="label">點數</div>
-          <div class="value">{{ member.points }}</div>
+          <div class="value fw-bold">{{ member.points|default:0 }}</div>
         </div>
       </div>
     </div>
