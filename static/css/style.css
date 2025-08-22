@@ -1,109 +1,23 @@
-/* ====== Mobile layout ====== */
+/* ============ 基礎變數 ============ */
 :root{
   --brand:#0b5d74;
   --ink:#0a2e3a;
   --bg:#f6f7fb;
-  --card:#ffffff;
+  --card:#fff;
   --radius:18px;
-  --shadow:0 8px 28px rgba(0,0,0,.12);          /* 原本是帶黃的陰影，改成中性陰影 */
+  --shadow:0 8px 28px rgba(0,0,0,.12);
 
   /* 底部導覽 */
   --tab-bg: var(--brand);
-  --tab-active-bg: color-mix(in srgb, var(--brand) 50%, rgb(255,255,0) 50%);
+  --tab-active-bg: color-mix(in srgb, var(--brand) 82%, white 18%);
   --tab-text:#fff;
 }
 
 body{ background:var(--bg); }
-.container{ max-width:480px; } /* 手機閱讀寬度 */
+.container{ max-width:480px; }
+main.container{ padding-bottom:90px; }  /* 預留給底部導覽列 */
 
-/* ==== 黑卡（舊） ==== */
-.blackcard{
-  background:#000; color:#fff;
-  border-radius:24px; padding:22px 18px;
-  box-shadow:var(--shadow); text-align:center;
-}
-.blackcard .brand{ font-weight:800; letter-spacing:.5px; }
-.blackcard .number{
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing:.12em; font-size:1.1rem; margin:12px 0 14px;
-}
-.blackcard .meta{ display:flex; justify-content:center; gap:36px; font-size:.95rem; opacity:.95; }
-.blackcard .label{ display:block; font-size:.75rem; opacity:.75; }
-
-/* ==== 兌換碼區 / 卡片通用 ==== */
-.code-panel,
-.cardish{
-  border-radius:var(--radius);
-  box-shadow:var(--shadow);
-}
-.code-panel{
-  background:#fff;
-  padding:14px; text-align:center;
-}
-.code-switch{ display:flex; gap:10px; margin-bottom:10px; }
-.code-switch .btn{ flex:1; border-radius:10px; }
-.code-box{
-  background:#fff; border:1px solid #e6e9ef;
-  border-radius:14px; padding:14px;
-  display:flex; justify-content:center; align-items:center;
-}
-.code-box img{ max-width:280px; width:100%; height:auto; }
-
-.cardish{ background:var(--card); padding:14px; }
-
-/* ==== 底部分頁（固定於底部） ==== */
-.app-tabs{
-  position:fixed; left:0; right:0; bottom:0;
-  background:transparent;
-  padding:6px 10px calc(6px + env(safe-area-inset-bottom));
-  display:flex; justify-content:center;
-  z-index:1000;
-}
-.app-tabs .tab-wrap{
-  width:100%; max-width:480px;
-  display:flex; gap:0;
-  border-radius:var(--radius);
-  overflow:hidden;                 /* 外層形成左右圓角 */
-  background:var(--tab-bg);
-}
-.app-tabs .tab-btn{
-  flex:1; min-width:0;
-  display:flex; align-items:center; justify-content:center;
-  height:56px; padding:0 12px;
-  background:transparent;          /* 由外層提供底色 */
-  color:var(--tab-text);
-  text-decoration:none; border:0; margin:0; border-radius:0;
-  font-size:clamp(12px, 2.8vw, 16px);
-  white-space:nowrap; line-height:1.1;
-}
-.app-tabs .tab-btn + .tab-btn{
-  border-left:1px solid rgba(255,255,255,.25); /* 視覺分隔線 */
-}
-.app-tabs .tab-btn.active{
-  background:var(--tab-active-bg);
-  color:var(--ink);
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);
-  border-left-color:transparent;
-}
-
-/* 主要內容底部留白，避免被 tabs 蓋住 */
-main.container{ padding-bottom:90px; }
-
-/* Token 顯示（會員卡號） */
-.token-box{
-  padding:.5rem .75rem;
-  border:1px solid #e6e9ef; border-radius:.5rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-}
-
-/* ==== 超小螢幕微調 ==== */
-@media (max-width:360px){
-  .blackcard .meta{ gap:20px; }
-  .app-tabs .tab-btn{ font-size:12px; padding:0 8px; }
-}
-
-/* ==== 新黑卡（背景圖） ==== */
+/* ============ 會員黑卡 ============ */
 .member-card{
   position:relative; width:100%; max-width:420px;
   margin:12px auto; aspect-ratio:16 / 9;
@@ -112,54 +26,108 @@ main.container{ padding-bottom:90px; }
 }
 .member-card .card-bg{
   position:absolute; inset:0;
-  background-image:url("/static/image/blackcard.jpg");
-  background-size:cover; background-position:center;
+  background:url("/static/image/blackcard.jpg") center/cover no-repeat;
   filter:contrast(1.05) brightness(.9);
 }
 .member-card .card-overlay{
   position:absolute; inset:0;
   background:radial-gradient(60% 70% at 50% 35%, rgba(0,0,0,.15), rgba(0,0,0,.55) 70%);
 }
+
+/* 版面：上方 title、下方左(資訊)/右(QR) */
 .member-card .card-content{
   position:relative; z-index:1; height:100%;
-  padding:18px 22px; color:#fff;
-  display:flex; flex-direction:column; justify-content:center;
-  text-shadow:0 1px 2px rgba(0,0,0,.5);
+  padding:18px 22px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.5);
+
+  display:grid;
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "title title"
+    "left  qr";
+  gap:10px 16px;
+  align-items:center;
 }
 .member-card .card-title{
-  margin:0; font-weight:700; letter-spacing:.06em; text-align:center;
+  grid-area:title; margin:0; text-align:center;
+  font-weight:700; letter-spacing:.06em;
   font-size:clamp(16px, 4vw, 22px);
 }
-.member-card .label{ opacity:.85; font-size:clamp(12px, 2.8vw, 14px); }
+
+/* 左：姓名/點數 */
+.member-card .info-col{
+  grid-area:left;
+  min-width:0;
+  padding-left: clamp(10px, 3.5vw, 26px); /* 往右移一點 */
+}
+.member-card .label{ opacity:.9; font-size:clamp(12px, 2.8vw, 14px); }
 .member-card .value{ font-weight:600; font-size:clamp(16px, 4.2vw, 22px); letter-spacing:.02em; }
-@media (max-width:360px){
-  .member-card .card-content{ padding:14px 16px; }
+.member-card .member-name{
+  display:block; max-width:100%;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  word-break:normal; overflow-wrap:normal; /* 中文不硬拆 */
 }
 
-/* 會員卡：讓「姓名/點數」這一列往中間靠一點 */
-.member-card .info-row{
-  max-width: 82%;      /* 縮小這一列的寬度 */
-  margin: 8px auto 0;  /* 置中 */
+/* 右：QRCode */
+.member-card .qr-col{ grid-area:qr; justify-self:end; }
+.member-card .qr-frame{
+  background:#fff; border-radius:12px; padding:8px;
+  box-shadow:0 6px 18px rgba(0,0,0,.18);
+  width:clamp(120px, 34vw, 180px);
+}
+.member-card .qr-img{ display:block; width:100%; height:auto; }
+
+/* 超小螢幕：上下堆疊（title → left → qr） */
+@media (max-width:340px){
+  .member-card .card-content{
+    grid-template-columns:1fr;
+    grid-template-areas:
+      "title"
+      "left"
+      "qr";
+    justify-items:center;
+  }
+  .member-card .qr-frame{ width:clamp(140px, 60vw, 220px); }
 }
 
-/* 超小螢幕再放寬一點，避免擠到換行 */
-@media (max-width: 360px){
-  .member-card .info-row{ max-width: 88%; }
+/* ============ 底部分頁導覽 ============ */
+.app-tabs{
+  position:fixed; left:0; right:0; bottom:0;
+  background:transparent;
+  padding:6px 10px calc(6px + env(safe-area-inset-bottom));
+  display:flex; justify-content:center; z-index:1000;
+}
+.app-tabs .tab-wrap{
+  width:100%; max-width:480px; display:flex; gap:0;
+  border-radius:var(--radius); overflow:hidden;
+  background:var(--tab-bg);
+}
+.app-tabs .tab-btn{
+  flex:1; min-width:0;
+  display:flex; align-items:center; justify-content:center;
+  height:56px; padding:0 12px;
+  color:var(--tab-text); text-decoration:none; border:0;
+  font-size:clamp(12px, 2.8vw, 16px); line-height:1.1;
+}
+.app-tabs .tab-btn + .tab-btn{ border-left:1px solid rgba(255,255,255,.25); }
+.app-tabs .tab-btn.active{
+  background:var(--tab-active-bg); color:var(--ink);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.35);
 }
 
-/* ==== 列表樣式（個資頁） ==== */
+/* ============ 其他通用 ============ */
+.token-box{
+  padding:.5rem .75rem;
+  border:1px solid #e6e9ef; border-radius:.5rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
 .list-group{ border-radius:12px; overflow:hidden; }
 .list-group-item{ padding:12px 16px; }
-.list-group.shadow-sm{
-  box-shadow:0 8px 24px rgba(0,0,0,.06);
-  border:1px solid #eef1f5;
-}
+.list-group.shadow-sm{ box-shadow:0 8px 24px rgba(0,0,0,.06); border:1px solid #eef1f5; }
 
-/* ==== 主要操作按鈕（解決 hover 變透明） ==== */
 .btn.btn-brand{
-  background-color:var(--brand);
-  border-color:var(--brand);
-  color:#fff;
+  background-color:var(--brand); border-color:var(--brand); color:#fff;
 }
 .btn.btn-brand:hover,
 .btn.btn-brand:focus,
@@ -168,10 +136,8 @@ main.container{ padding-bottom:90px; }
   background-color:color-mix(in srgb, var(--brand) 90%, black 10%) !important;
   border-color:color-mix(in srgb, var(--brand) 90%, black 10%) !important;
   color:#fff !important;
-  box-shadow:0 0 0 0.2rem rgba(11,93,116,.15);
+  box-shadow:0 0 0 .2rem rgba(11,93,116,.15);
 }
-
-/* 次要操作（取消） */
 .btn.btn-outline-secondary{
   border-color:#cfd8e3; color:#3a4a5a; background:transparent;
 }
@@ -179,29 +145,3 @@ main.container{ padding-bottom:90px; }
 .btn.btn-outline-secondary:focus{
   background:#f5f7fa; color:#1f2d3d;
 }
-
-/* 會員卡：姓名單行省略，避免中文被硬切 */
-.member-name {
-  display: inline-block;
-  max-width: 100%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: keep-all;   /* 中文不要在任意字元處換行 */
-}
-/* 讓姓名欄能在 flex 內縮，否則子元素的省略號不生效 */
-.member-card .name-col{ min-width: 0; }
-
-/* 姓名：單行省略，避免中文被硬切（以權重穩壓） */
-.member-card .member-name{
-  display: block;
-  max-width: 100%;
-  white-space: nowrap !important;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  word-break: normal !important;     /* 取消任何 break-all */
-  overflow-wrap: normal !important;  /* 取消 anywhere/break-word */
-}
-
-/* 放寬整列寬度，避免太擠 */
-.member-card .info-row{ max-width: 92%; }  /* 原本 82%，你也可設到 100% 看版面 */

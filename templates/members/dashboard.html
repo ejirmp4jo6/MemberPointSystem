@@ -8,29 +8,32 @@
     <div class="card-bg"></div>
     <div class="card-overlay"></div>
 
-    <div class="card-content">
+    <div class="card-content">  {# ★ 我們用 grid 佈局：上=標題；下=左(資訊)/右(QR) #}
       <h5 class="card-title">我的會員卡</h5>
-      <div class="row g-3 mt-2 info-row align-items-center">
-        <div class="col name-col text-start">
-          <div class="label">姓名</div>
-          <div class="value">
-            <span class="member-name"
-                  title="{% firstof member.display_name user.first_name user.get_full_name user.username %}">
-              {% firstof member.display_name user.first_name user.get_full_name user.username %}
-            </span>
-          </div>
+
+      <div class="info-col">
+        <div class="label mb-1">姓名</div>
+        <div class="value">
+          <span class="member-name"
+                title="{% firstof member.display_name user.first_name user.get_full_name user.username %}">
+            {% firstof member.display_name user.first_name user.get_full_name user.username %}
+          </span>
         </div>
 
-        <div class="col-auto text-end">
-          <div class="label">點數</div>
-          <div class="value fw-bold">{{ member.points|default:0 }}</div>
+        <div class="label mt-3 mb-1">點數</div>
+        <div class="value fw-bold">{{ member.points|default:0 }}</div>
+      </div>
+
+      <div class="qr-col">
+        <div class="qr-frame">
+          <img src="{% url 'qrcode_image' %}" alt="會員 QRCode" class="qr-img">
         </div>
       </div>
     </div>
   </div>
 
   <!-- 會員條碼區（可切換 QR / 條碼） -->
-  <div class="col-12" id="code-area">
+  <!-- <div class="col-12" id="code-area">
     <div class="code-panel">
       <div class="code-switch">
         <button class="btn btn-warning" id="tab-qr">會員 QRCode</button>
@@ -43,7 +46,7 @@
         <a id="download-link" class="btn btn-sm btn-outline-dark" href="{% url 'qrcode_image' %}" download="member_qr.png">下載圖片</a>
       </div>
     </div>
-  </div>
+  </div> -->
 </div>
 
 <!-- 切換 QR / 條碼的腳本 -->
