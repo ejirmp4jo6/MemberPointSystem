@@ -145,3 +145,9 @@ main.container{ padding-bottom:90px; }  /* 預留給底部導覽列 */
 .btn.btn-outline-secondary:focus{
   background:#f5f7fa; color:#1f2d3d;
 }
+
+/* iOS：避免聚焦輸入框時自動放大 */
+input, select, textarea { font-size: 16px; }
+
+/* iOS：內部滾動容器更順；要用在哪個區塊就加 .scrollable */
+.scrollable, .list-group { -webkit-overflow-scrolling: touch; }
