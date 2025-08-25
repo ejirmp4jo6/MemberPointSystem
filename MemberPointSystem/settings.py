@@ -34,7 +34,7 @@ LINE_LIFF_ID = os.getenv("LINE_LIFF_ID", "")   # ← 就讀這個
 SECRET_KEY = "django-insecure-4vv9kl^y@2q^8zfz45=gup_+eeg23ngf923o!a3@so76kg*0!*"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False  
+DEBUG = os.getenv("DEBUG", "False") == "True" 
 
 ALLOWED_HOSTS = ["*",
     "zubiba.com.tw",
@@ -131,10 +131,11 @@ WSGI_APPLICATION = "MemberPointSystem.wsgi.application"
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
+    "default": dj_database_url.parse(
+        os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR}/db.sqlite3"),
+        conn_max_age=600,
+        ssl_require=not DEBUG,
+    )
 }
 
 
