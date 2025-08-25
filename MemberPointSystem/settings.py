@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import dj_database_url
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -130,15 +130,21 @@ WSGI_APPLICATION = "MemberPointSystem.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+db_url = (os.getenv("DATABASE_URL") or "").strip()
+if not db_url:
+    # 本機沒有 DATABASE_URL → 使用 SQLite
+    db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+
+# 只有 Postgres 需要 SSL
+is_postgres = db_url.startswith(("postgres://", "postgresql://", "postgis://", "pgsql://", "timescale://"))
+
 DATABASES = {
     "default": dj_database_url.parse(
-        os.getenv("DATABASE_URL", f"sqlite:///{BASE_DIR}/db.sqlite3"),
+        db_url,
         conn_max_age=600,
-        ssl_require=not DEBUG,
+        ssl_require=(is_postgres and not DEBUG),
     )
 }
-
-
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
 

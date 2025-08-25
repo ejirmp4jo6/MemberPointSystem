@@ -88,6 +88,8 @@ ply @ file:///C:/Users/dev-admin/perseverance-python-buildout/croot/ply_16994739
 prompt-toolkit @ file:///C:/b/abs_68uwr58ed1/croot/prompt-toolkit_1704404394082/work
 propcache @ file:///C:/b/abs_57780xb0gk/croot/propcache_1744012740137/work
 psutil @ file:///C:/b/abs_b5gv3mn55h/croot/psutil_1736371546320/work
+psycopg==3.2.9
+psycopg-binary==3.2.9
 ptyprocess @ file:///tmp/build/80754af9/ptyprocess_1609355006118/work/dist/ptyprocess-0.7.0-py2.py3-none-any.whl
 pure-eval @ file:///opt/conda/conda-bld/pure_eval_1646925070566/work
 pycodestyle @ file:///C:/b/abs_9bj6ihy3hn/croot/pycodestyle_1726150314067/work
