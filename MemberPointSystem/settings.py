@@ -34,18 +34,25 @@ LINE_LIFF_ID = os.getenv("LINE_LIFF_ID", "")   # ← 就讀這個
 SECRET_KEY = "django-insecure-4vv9kl^y@2q^8zfz45=gup_+eeg23ngf923o!a3@so76kg*0!*"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False  
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ["*",
+    "zubiba.com.tw",
+    "www.zubiba.com.tw",
+]
 
 # 讓 ngrok 的 HTTPS 被視為可信來源（支援萬用字元）
-CSRF_TRUSTED_ORIGINS = ['https://*.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = [
+    "https://zubiba.com.tw",
+    "https://www.zubiba.com.tw",
+    'https://*.ngrok-free.app']
 
 # 允許透過 ngrok 存取
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '.ngrok-free.app']
 
 # 告訴 Django：前面有反向代理做了 HTTPS，轉來是 http，但仍視為安全連線
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_SSL_REDIRECT = True
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
@@ -97,8 +104,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 TEMPLATES[0]['DIRS'] = [BASE_DIR / 'templates']
+
 STATIC_URL = 'static/'
+STATIC_ROOT =BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / 'static']
+INSTALLED_APPS += ["whitenoise.runserver_nostatic"]
+MIDDLEWARE = ["whitenoise.middleware.WhiteNoiseMiddleware", *MIDDLEWARE]
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # 登入/登出導向
 LOGIN_URL = 'login'
