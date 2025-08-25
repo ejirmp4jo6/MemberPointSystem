@@ -9,7 +9,12 @@ document.addEventListener('DOMContentLoaded', function () {
   let running = false;
 
   function onDecoded(text){
-    if (text) tokenInput.value = String(text).trim();
+    if (!tokenInput) return;
+    const token = (text || '').trim(); // 去掉換行/空白
+    tokenInput.value = token;
+    // 讓監聽 token 變化的程式（查可折抵上限）跑起來
+    tokenInput.dispatchEvent(new Event('input',  { bubbles: true }));
+    tokenInput.dispatchEvent(new Event('change', { bubbles: true }));
     if (navigator.vibrate) navigator.vibrate(80);
     stopScanner();
     if (amountInput) amountInput.focus();
