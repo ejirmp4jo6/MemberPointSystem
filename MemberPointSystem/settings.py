@@ -31,15 +31,10 @@ LINE_LIFF_ID = os.getenv("LINE_LIFF_ID", "")   # ← 就讀這個
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-4vv9kl^y@2q^8zfz45=gup_+eeg23ngf923o!a3@so76kg*0!*"
+SECRET_KEY = os.getenv("SECRET_KEY", "dev-placeholder-change-me")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv("DEBUG", "False") == "True" 
-
-ALLOWED_HOSTS = ["*",
-    "zubiba.com.tw",
-    "www.zubiba.com.tw",
-]
 
 # 讓 ngrok 的 HTTPS 被視為可信來源（支援萬用字元）
 CSRF_TRUSTED_ORIGINS = [
@@ -48,7 +43,11 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.ngrok-free.app']
 
 # 允許透過 ngrok 存取
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', '.ngrok-free.app']
+ALLOWED_HOSTS = [
+    "*",
+    "zubiba.com.tw",
+    "www.zubiba.com.tw",
+    'localhost', '127.0.0.1', '[::1]', '.ngrok-free.app']
 
 # 告訴 Django：前面有反向代理做了 HTTPS，轉來是 http，但仍視為安全連線
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -56,7 +55,7 @@ SECURE_SSL_REDIRECT = True
 
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-CSRF_COOKIE_SAMESITE = 'NONE'
+CSRF_COOKIE_SAMESITE = 'None'
 
 
 # Application definition
@@ -130,20 +129,14 @@ WSGI_APPLICATION = "MemberPointSystem.wsgi.application"
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-db_url = (os.getenv("DATABASE_URL") or "").strip()
+db_url = (os.getenv("DATABASE_URL") or "").strip() or f"sqlite:///{BASE_DIR/'db.sqlite3'}"
+is_pg  = db_url.startswith(("postgres://","postgresql://","postgis://","pgsql://","timescale://"))
 if not db_url:
     # 本機沒有 DATABASE_URL → 使用 SQLite
     db_url = f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
 
-# 只有 Postgres 需要 SSL
-is_postgres = db_url.startswith(("postgres://", "postgresql://", "postgis://", "pgsql://", "timescale://"))
-
 DATABASES = {
-    "default": dj_database_url.parse(
-        db_url,
-        conn_max_age=600,
-        ssl_require=(is_postgres and not DEBUG),
-    )
+    "default": dj_database_url.parse(db_url, conn_max_age=600, ssl_require=(is_pg and not DEBUG))
 }
 # Password validation
 # https://docs.djangoproject.com/en/5.2/ref/settings/#auth-password-validators
@@ -166,10 +159,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
-
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
 
 USE_I18N = True
 
