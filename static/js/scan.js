@@ -1,6 +1,6 @@
 // static/js/scan.js  或 members/static/members/js/scan.js
 document.addEventListener('DOMContentLoaded', function () {
-  const tokenInput  = document.getElementById('token-input');
+  const tokenInput  = document.querySelector('input[name="barcode_token"]');
   const amountInput = document.getElementById('amount-input');
   const openBtn     = document.getElementById('open-scanner');   // 右邊的相機按鈕
   const qrBox       = document.getElementById('qr-box');         // 你頁面已有的掃描區
