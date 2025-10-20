@@ -5,6 +5,7 @@
 
 <div class="row gy-3">
   <div class="member-card">
+  <div class="member-card" style="--card-bg: url('{% static 'image/S__9125935.jpg' %}');">
     <div class="card-bg"></div>
     <div class="card-overlay"></div>
 
@@ -24,29 +25,24 @@
         <div class="value fw-bold">{{ member.points|default:0 }}</div>
       </div>
 
-      <div class="qr-col">
+      <!-- <div class="qr-col">
         <div class="qr-frame">
           <img src="{% url 'qrcode_image' %}" alt="會員 QRCode" class="qr-img">
         </div>
-      </div>
+      </div> -->
     </div>
   </div>
 
-  <!-- 會員條碼區（可切換 QR / 條碼） -->
-  <!-- <div class="col-12" id="code-area">
-    <div class="code-panel">
-      <div class="code-switch">
-        <button class="btn btn-warning" id="tab-qr">會員 QRCode</button>
-      </div>
-
-      <div class="code-box">
-        <img id="code-img" src="{% url 'qrcode_image' %}" alt="會員 QRCode" class="img-fluid" style="max-width:320px">
-      </div>
-      <div class="d-flex justify-content-center gap-2 mt-2">
-        <a id="download-link" class="btn btn-sm btn-outline-dark" href="{% url 'qrcode_image' %}" download="member_qr.png">下載圖片</a>
-      </div>
+  <!-- 卡片下方的 QR 區 -->
+  <div class="code-area mt-2">
+    <div class="code-box code-box--qr">
+      <img src="{% url 'qrcode_image' %}" alt="會員 QRCode" class="img-fluid" />
     </div>
-  </div> -->
+    <!-- （預留）優惠推播區，可放輪播或公告
+    <div class="promo-rail mt-2">
+      <div class="promo">本週活動：憑會員卡享咖啡第二杯半價</div>
+    </div> -->
+  </div>
 </div>
 
 <!-- 切換 QR / 條碼的腳本 -->
