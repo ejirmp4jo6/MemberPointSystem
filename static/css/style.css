@@ -155,32 +155,38 @@ input, select, textarea { font-size: 16px; }
 /* iOS：內部滾動容器更順；要用在哪個區塊就加 .scrollable */
 .scrollable, .list-group { -webkit-overflow-scrolling: touch; }
 
-/* 卡片下方的 QR 區：縮小高度，白底提高對比 */
-.code-area .code-box{
-  background:#fff;
-  border-radius:12px;
-  padding:10px;
-  height:110px;                 /* ← 控制圖形碼不要太大 */
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
-}
-.code-area .code-box img,
-.code-area .code-box canvas,
-.code-area .code-box svg{
-  max-width:100%;
-  max-height:100%;
-  object-fit:contain;
-  display:block;
+/* 統一用變數控制 QR 高度：手機與大螢幕都好調 */
+:root{
+  /* 手機：160~240px 之間，依畫面寬度自動伸縮 */
+  --qr-height: clamp(160px, 38vw, 240px);
 }
 
-/* 優惠推播（預留區） */
-.promo-rail{
-  background:#fff;
-  border-radius:12px;
-  padding:12px;
-  min-height:60px;              /* ← 保留底部空間 */
-  box-shadow:0 6px 12px rgba(0,0,0,.06);
+.code-area{ margin-top: 14px; }
+
+/* QR 容器 */
+.code-box{
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px 16px;
+  height: var(--qr-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
 }
-.promo{ font-weight:600; color:#333; }
+
+/* 讓 QR 圖片撐滿容器高度（維持方形） */
+.code-box--qr img{
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  image-rendering: pixelated; /* 放大 QR 邊緣更銳利 */
+}
+
+/* 平板/桌機再放大一點也 OK */
+@media (min-width: 768px){
+  :root{
+    --qr-height: 220px;
+  }
+}
