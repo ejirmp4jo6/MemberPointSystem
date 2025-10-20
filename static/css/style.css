@@ -26,7 +26,10 @@ main.container{ padding-bottom:90px; }  /* 預留給底部導覽列 */
 }
 .member-card .card-bg{
   position:absolute; inset:0;
-  background:url("/static/image/blackcard.jpg") center/cover no-repeat;
+  background-image: var(--card-bg, url("/static/image/blackcard.jpg"));
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
   filter:contrast(1.05) brightness(.9);
 }
 .member-card .card-overlay{
@@ -151,3 +154,33 @@ input, select, textarea { font-size: 16px; }
 
 /* iOS：內部滾動容器更順；要用在哪個區塊就加 .scrollable */
 .scrollable, .list-group { -webkit-overflow-scrolling: touch; }
+
+/* 卡片下方的 QR 區：縮小高度，白底提高對比 */
+.code-area .code-box{
+  background:#fff;
+  border-radius:12px;
+  padding:10px;
+  height:110px;                 /* ← 控制圖形碼不要太大 */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
+}
+.code-area .code-box img,
+.code-area .code-box canvas,
+.code-area .code-box svg{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  display:block;
+}
+
+/* 優惠推播（預留區） */
+.promo-rail{
+  background:#fff;
+  border-radius:12px;
+  padding:12px;
+  min-height:60px;              /* ← 保留底部空間 */
+  box-shadow:0 6px 12px rgba(0,0,0,.06);
+}
+.promo{ font-weight:600; color:#333; }
