@@ -7,12 +7,15 @@
 
   <div class="row gy-3">
     <div class="member-card">
-    <img class="card-image"
-        src="{% static 'image/S__9125935.jpg' %}"
-        alt="會員卡"
-        loading="lazy" />
-    <h5 class="card-title">我的會員卡</h5>
-  </div>
+      <picture>
+        <source srcset="{% static 'image/member-card.webp' %}" type="image/webp">
+        <img class="card-image"
+            src="{% static 'image/S__9125935.jpg' %}"
+            alt="會員卡"
+            loading="lazy">
+      </picture>
+      <h5 class="card-title">我的會員卡</h5>
+    </div>
 
     <!-- 卡片下方的 QR 區 -->
     <div class="code-area mt-2">
