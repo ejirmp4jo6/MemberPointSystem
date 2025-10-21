@@ -259,3 +259,51 @@ input, select, textarea { font-size: 16px; }
 
 /* 如果你保留了卡面內的 info-col，但不想顯示，可強制隱藏（備用） */
 /* .member-card .info-col{ display:none !important; } */
+
+/* 卡片容器（保留圓角/陰影），不要任何濾鏡/遮罩 */
+.member-card{
+  position: relative;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 24px rgba(0,0,0,.12);
+  background: #fff;            /* 原圖白底可直接顯示 */
+}
+
+/* 卡片圖 */
+.member-card .card-image{
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;            /* 若要完整顯示原圖不裁切，改成 contain */
+}
+
+/* 移除過去的遮罩層（若仍存在） */
+.member-card .card-bg,
+.member-card .card-overlay{
+  display: none !important;
+}
+
+/* 卡片標題維持在上方 */
+.member-card .card-title{
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  color: #fff;                  /* 白底圖若看不清可改 #333 */
+  text-shadow: 0 2px 6px rgba(0,0,0,.35);
+  font-weight: 800;
+  letter-spacing: .1em;
+  z-index: 1;
+}
+
+/* 內容底部空間，避免被固定的底部導覽遮住 */
+.page-content{
+  padding-bottom: calc(110px + env(safe-area-inset-bottom)); /* iOS 安全區也照顧到 */
+}
+
+/* 萬一有其他地方設定了 overflow，強制允許捲動 */
+html, body{
+  height: auto;
+  overflow-y: auto;
+}

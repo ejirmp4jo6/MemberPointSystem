@@ -3,60 +3,44 @@
 {% block content %}
 {% load static %}
 
-<div class="row gy-3">
-  <div class="member-card" style="--card-bg: url('{% static 'image/S__9125935.jpg' %}');">
-    <div class="card-bg"></div>
-    <div class="card-overlay"></div>
+<div class="page-content">
 
-    <div class="card-content">  {# ★ 我們用 grid 佈局：上=標題；下=左(資訊)/右(QR) #}
-      <h5 class="card-title">我的會員卡</h5>
+  <div class="row gy-3">
+    <div class="member-card">
+    <img class="card-image"
+        src="{% static 'image/S__9125935.jpg' %}"
+        alt="會員卡"
+        loading="lazy" />
+    <h5 class="card-title">我的會員卡</h5>
+  </div>
 
-      <!-- <div class="info-col">
-        <div class="label mb-1">姓名</div>
-        <div class="value">
-          <span class="member-name"
-                title="{% firstof member.display_name user.first_name user.get_full_name user.username %}">
+    <!-- 卡片下方的 QR 區 -->
+    <div class="code-area mt-2">
+      <div class="code-box code-box--qr">
+        <img src="{% url 'qrcode_image' %}" alt="會員 QRCode" class="img-fluid" />
+      </div>
+      <!-- 會員摘要：姓名 / 點數（在 QRcode 下方） -->
+      <div class="member-summary">
+        <div class="ms-item">
+          <div class="ms-label">姓名</div>
+          <div class="ms-value">
             {% firstof member.display_name user.first_name user.get_full_name user.username %}
-          </span>
+          </div>
         </div>
-
-        <div class="label mt-3 mb-1">點數</div>
-        <div class="value fw-bold">{{ member.points|default:0 }}</div>
-      </div> -->
-
-      <!-- <div class="qr-col">
-        <div class="qr-frame">
-          <img src="{% url 'qrcode_image' %}" alt="會員 QRCode" class="qr-img">
+        <div class="ms-item">
+          <div class="ms-label">點數</div>
+          <div class="ms-value">{{ member.points|default:0 }}</div>
         </div>
+      </div>
+      <!-- （預留）優惠推播區，可放輪播或公告
+      <div class="promo-rail mt-2">
+        <div class="promo">本週活動：憑會員卡享咖啡第二杯半價</div>
       </div> -->
     </div>
   </div>
 
-  <!-- 卡片下方的 QR 區 -->
-  <div class="code-area mt-2">
-    <div class="code-box code-box--qr">
-      <img src="{% url 'qrcode_image' %}" alt="會員 QRCode" class="img-fluid" />
-    </div>
-    <!-- 會員摘要：姓名 / 點數（在 QRcode 下方） -->
-    <div class="member-summary">
-      <div class="ms-item">
-        <div class="ms-label">姓名</div>
-        <div class="ms-value">
-          {% firstof member.display_name user.first_name user.get_full_name user.username %}
-        </div>
-      </div>
-      <div class="ms-item">
-        <div class="ms-label">點數</div>
-        <div class="ms-value">{{ member.points|default:0 }}</div>
-      </div>
-    </div>
-    <!-- （預留）優惠推播區，可放輪播或公告
-    <div class="promo-rail mt-2">
-      <div class="promo">本週活動：憑會員卡享咖啡第二杯半價</div>
-    </div> -->
-  </div>
+  <!-- 切換 QR / 條碼的腳本 -->
+  <script src="{% static 'js/dashboard.js' %}"></script>
+  {% endblock %}
+
 </div>
-
-<!-- 切換 QR / 條碼的腳本 -->
-<script src="{% static 'js/dashboard.js' %}"></script>
-{% endblock %}
