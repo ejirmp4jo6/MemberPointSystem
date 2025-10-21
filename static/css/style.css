@@ -41,7 +41,7 @@ main.container{ padding-bottom:90px; } /* 預留底部導覽列 */
 /* 標題置頂置中 */
 .member-card .card-title{
   position:absolute; top:14px; left:50%; transform:translateX(-50%);
-  margin:0; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.35);
+  margin:0; color:#222; text-shadow:0 2px 6px rgba(0,0,0,.35);
   font-weight:800; letter-spacing:.1em; z-index:1;
 }
 
@@ -125,3 +125,26 @@ input, select, textarea{ font-size:16px; }
 .page-content{ padding-bottom:calc(110px + env(safe-area-inset-bottom)); }
 /* 保證可捲動 */
 html, body{ height:auto; overflow-y:auto; }
+
+/* === 修正卡片圖片沒填滿 & 黑邊 === */
+
+/* 1) 先給卡片一個固定比例（依你的卡面比例，16:9 只是範例） */
+.member-card{
+  aspect-ratio: 16 / 9;   /* 如果你的卡圖是別的比例，改這裡，例如 1000/630 */
+}
+
+/* 2) 讓圖片真的「吃滿容器」，object-fit 才會生效 */
+.member-card .card-image{
+  width: 100%;
+  height: 100%;            /* 由原本的 auto 改成 100% */
+  object-fit: cover;       /* 鋪滿並等比裁切，不留邊 */
+  object-position: center;
+  display: block;
+  border-radius: inherit;  /* 保險；跟容器圓角一致 */
+}
+
+/* 3) 若你覺得邊緣還有一圈暗影，就是 box-shadow，看起來像黑邊。
+      想更淡就用下面一行覆蓋；完全不要影子就設為 none */
+.member-card{
+  box-shadow: 0 6px 16px rgba(0,0,0,.08);  /* 或者直接：box-shadow: none; */
+}
