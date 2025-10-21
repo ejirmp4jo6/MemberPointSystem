@@ -1,4 +1,4 @@
-/* ============ 基礎變數 ============ */
+/* ============ 變數與基礎 ============ */
 :root{
   --brand:#0b5d74;
   --ink:#0a2e3a;
@@ -11,86 +11,64 @@
   --tab-bg: var(--brand);
   --tab-active-bg: color-mix(in srgb, var(--brand) 82%, white 18%);
   --tab-text:#fff;
+
+  /* QR 尺寸（手機約 260–360px 自適應） */
+  --qr-height: clamp(260px, 64vw, 360px);
+}
+
+@media (min-width:768px){
+  :root{ --qr-height: clamp(300px, 40vw, 420px); }
 }
 
 body{ background:var(--bg); }
 .container{ max-width:480px; }
-main.container{ padding-bottom:90px; }  /* 預留給底部導覽列 */
+main.container{ padding-bottom:90px; } /* 預留底部導覽列 */
 
-/* ============ 會員黑卡 ============ */
+/* ============ 會員卡（白底、不加遮罩）=========== */
 .member-card{
-  position:relative; width:100%; max-width:420px;
-  margin:12px auto; aspect-ratio:16 / 9;
-  border-radius:24px; overflow:hidden;
-  box-shadow:0 12px 30px rgba(0,0,0,.25);
+  position:relative;
+  border-radius:18px;
+  overflow:hidden;
+  box-shadow:0 10px 24px rgba(0,0,0,.12);
+  background:#fff;
 }
-.member-card .card-bg{
-  position:absolute; inset:0;
-  background-image: var(--card-bg, url("/static/image/blackcard.jpg"));
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
-  filter:contrast(1.05) brightness(.9);
+.member-card .card-image{
+  display:block; width:100%; height:auto; object-fit:cover; /* 若要完整顯示原圖改 contain */
 }
-.member-card .card-overlay{
-  position:absolute; inset:0;
-  background:radial-gradient(60% 70% at 50% 35%, rgba(0,0,0,.15), rgba(0,0,0,.55) 70%);
-}
-
-/* 版面：上方 title、下方左(資訊)/右(QR) */
-.member-card .card-content{
-  position:relative; z-index:1; height:100%;
-  padding:18px 22px; color:#fff; text-shadow:0 1px 2px rgba(0,0,0,.5);
-
-  display:grid;
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto 1fr;
-  grid-template-areas:
-    "title title"
-    "left  qr";
-  gap:10px 16px;
-  align-items:center;
-}
+/* 移除舊版遮罩與背景圖層（若仍存在於 DOM 中） */
+.member-card .card-bg,
+.member-card .card-overlay{ display:none !important; }
+/* 標題置頂置中 */
 .member-card .card-title{
-  grid-area:title; margin:0; text-align:center;
-  font-weight:700; letter-spacing:.06em;
-  font-size:clamp(16px, 4vw, 22px);
+  position:absolute; top:14px; left:50%; transform:translateX(-50%);
+  margin:0; color:#fff; text-shadow:0 2px 6px rgba(0,0,0,.35);
+  font-weight:800; letter-spacing:.1em; z-index:1;
 }
 
-/* 左：姓名/點數 */
-.member-card .info-col{
-  grid-area:left;
-  min-width:0;
-  padding-left: clamp(10px, 3.5vw, 26px); /* 往右移一點 */
+/* ============ 會員摘要（姓名 / 點數）=========== */
+.member-summary{
+  margin-top:10px; display:grid; grid-template-columns:1fr 1fr;
+  gap:10px 18px; align-items:center; text-align:center;
 }
-.member-card .label{ opacity:.9; font-size:clamp(12px, 2.8vw, 14px); }
-.member-card .value{ font-weight:600; font-size:clamp(16px, 4.2vw, 22px); letter-spacing:.02em; }
-.member-card .member-name{
-  display:block; max-width:100%;
-  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-  word-break:normal; overflow-wrap:normal; /* 中文不硬拆 */
+.ms-item{
+  background:#fff; border-radius:12px; padding:10px 12px;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);
 }
+.ms-label{ font-size:13px; color:#7a8a94; letter-spacing:.1em; margin-bottom:2px; }
+.ms-value{ font-size:20px; font-weight:700; color:#0d2b36; }
+@media (max-width:360px){ .member-summary{ grid-template-columns:1fr; } }
 
-/* 右：QRCode */
-.member-card .qr-col{ grid-area:qr; justify-self:end; }
-.member-card .qr-frame{
-  background:#fff; border-radius:12px; padding:8px;
-  box-shadow:0 6px 18px rgba(0,0,0,.18);
-  width:clamp(120px, 34vw, 180px);
+/* ============ QR 容器與圖片 ============ */
+.code-area{ margin-top:14px; }
+.code-box{
+  background:#fff; border-radius:14px; padding:10px 12px;
+  height:var(--qr-height);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.06);
 }
-.member-card .qr-img{ display:block; width:100%; height:auto; }
-
-/* 超小螢幕：上下堆疊（title → left → qr） */
-@media (max-width:340px){
-  .member-card .card-content{
-    grid-template-columns:1fr;
-    grid-template-areas:
-      "title"
-      "left"
-      "qr";
-    justify-items:center;
-  }
-  .member-card .qr-frame{ width:clamp(140px, 60vw, 220px); }
+.code-box--qr img{
+  height:100%; width:auto; max-width:100%; object-fit:contain;
+  image-rendering:pixelated; /* 放大時邊緣更銳利 */
 }
 
 /* ============ 底部分頁導覽 ============ */
@@ -102,14 +80,11 @@ main.container{ padding-bottom:90px; }  /* 預留給底部導覽列 */
 }
 .app-tabs .tab-wrap{
   width:100%; max-width:480px; display:flex; gap:0;
-  border-radius:var(--radius); overflow:hidden;
-  background:var(--tab-bg);
+  border-radius:var(--radius); overflow:hidden; background:var(--tab-bg);
 }
 .app-tabs .tab-btn{
-  flex:1; min-width:0;
-  display:flex; align-items:center; justify-content:center;
-  height:56px; padding:0 12px;
-  color:var(--tab-text); text-decoration:none; border:0;
+  flex:1; min-width:0; display:flex; align-items:center; justify-content:center;
+  height:56px; padding:0 12px; color:var(--tab-text); text-decoration:none; border:0;
   font-size:clamp(12px, 2.8vw, 16px); line-height:1.1;
 }
 .app-tabs .tab-btn + .tab-btn{ border-left:1px solid rgba(255,255,255,.25); }
@@ -120,190 +95,33 @@ main.container{ padding-bottom:90px; }  /* 預留給底部導覽列 */
 
 /* ============ 其他通用 ============ */
 .token-box{
-  padding:.5rem .75rem;
-  border:1px solid #e6e9ef; border-radius:.5rem;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  padding:.5rem .75rem; border:1px solid #e6e9ef; border-radius:.5rem;
+  font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
   white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
 }
-.list-group{ border-radius:12px; overflow:hidden; }
+.list-group{ border-radius:12px; overflow:hidden; -webkit-overflow-scrolling:touch; }
 .list-group-item{ padding:12px 16px; }
 .list-group.shadow-sm{ box-shadow:0 8px 24px rgba(0,0,0,.06); border:1px solid #eef1f5; }
 
-.btn.btn-brand{
-  background-color:var(--brand); border-color:var(--brand); color:#fff;
-}
+.btn.btn-brand{ background-color:var(--brand); border-color:var(--brand); color:#fff; }
 .btn.btn-brand:hover,
 .btn.btn-brand:focus,
 .btn.btn-brand:active,
 .btn.btn-brand:active:focus{
   background-color:color-mix(in srgb, var(--brand) 90%, black 10%) !important;
   border-color:color-mix(in srgb, var(--brand) 90%, black 10%) !important;
-  color:#fff !important;
-  box-shadow:0 0 0 .2rem rgba(11,93,116,.15);
+  color:#fff !important; box-shadow:0 0 0 .2rem rgba(11,93,116,.15);
 }
-.btn.btn-outline-secondary{
-  border-color:#cfd8e3; color:#3a4a5a; background:transparent;
-}
+.btn.btn-outline-secondary{ border-color:#cfd8e3; color:#3a4a5a; background:transparent; }
 .btn.btn-outline-secondary:hover,
-.btn.btn-outline-secondary:focus{
-  background:#f5f7fa; color:#1f2d3d;
-}
+.btn.btn-outline-secondary:focus{ background:#f5f7fa; color:#1f2d3d; }
 
-/* iOS：避免聚焦輸入框時自動放大 */
-input, select, textarea { font-size: 16px; }
+/* iOS 輸入放大避免 */
+input, select, textarea{ font-size:16px; }
+/* 需要可滾動區域時加 .scrollable */
+.scrollable{ -webkit-overflow-scrolling:touch; }
 
-/* iOS：內部滾動容器更順；要用在哪個區塊就加 .scrollable */
-.scrollable, .list-group { -webkit-overflow-scrolling: touch; }
-
-/* 統一用變數控制 QR 高度：手機與大螢幕都好調 */
-:root{
-  /* 手機：160~240px 之間，依畫面寬度自動伸縮 */
-  --qr-height: clamp(160px, 38vw, 240px);
-}
-
-.code-area{ margin-top: 14px; }
-
-/* QR 容器 */
-.code-box{
-  background: #fff;
-  border-radius: 12px;
-  padding: 12px 16px;
-  height: var(--qr-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
-}
-
-/* 讓 QR 圖片撐滿容器高度（維持方形） */
-.code-box--qr img{
-  height: 100%;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  image-rendering: pixelated; /* 放大 QR 邊緣更銳利 */
-}
-
-/* 平板/桌機再放大一點也 OK */
-@media (min-width: 768px){
-  :root{
-    --qr-height: 220px;
-  }
-}
-/* ===== 放大 QR 尺寸（手機與桌機自動伸縮） ===== */
-:root{
-  /* 手機大約 260–360px，依視窗寬自動伸縮 */
-  --qr-height: clamp(260px, 64vw, 360px);
-}
-
-.code-area{ margin-top: 14px; }
-
-.code-box{
-  background: #fff;
-  border-radius: 14px;
-  padding: 10px 12px;                 /* 保留少量安全邊距 */
-  height: var(--qr-height);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
-}
-
-.code-box--qr img{
-  height: 100%;
-  width: auto;
-  max-width: 100%;
-  object-fit: contain;
-  image-rendering: pixelated;         /* 放大時邊緣更銳利 */
-}
-
-/* 平板/桌機再更大一些 */
-@media (min-width: 768px){
-  :root{ --qr-height: clamp(300px, 40vw, 420px); }
-}
-
-/* ===== 會員摘要（姓名 / 點數）放在 QR 下方 ===== */
-.member-summary{
-  margin-top: 10px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;     /* 姓名｜點數 兩欄 */
-  gap: 10px 18px;
-  align-items: center;
-  text-align: center;
-}
-
-.ms-item{
-  background: #fff;
-  border-radius: 12px;
-  padding: 10px 12px;
-  box-shadow: inset 0 0 0 1px rgba(0,0,0,.06);
-}
-
-.ms-label{
-  font-size: 13px;
-  color: #7a8a94;
-  letter-spacing: .1em;
-  margin-bottom: 2px;
-}
-
-.ms-value{
-  font-size: 20px;
-  font-weight: 700;
-  color: #0d2b36;
-}
-
-/* 超窄螢幕自動單欄排列 */
-@media (max-width: 360px){
-  .member-summary{ grid-template-columns: 1fr; }
-}
-
-/* 如果你保留了卡面內的 info-col，但不想顯示，可強制隱藏（備用） */
-/* .member-card .info-col{ display:none !important; } */
-
-/* 卡片容器（保留圓角/陰影），不要任何濾鏡/遮罩 */
-.member-card{
-  position: relative;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 10px 24px rgba(0,0,0,.12);
-  background: #fff;            /* 原圖白底可直接顯示 */
-}
-
-/* 卡片圖 */
-.member-card .card-image{
-  display: block;
-  width: 100%;
-  height: auto;
-  object-fit: cover;            /* 若要完整顯示原圖不裁切，改成 contain */
-}
-
-/* 移除過去的遮罩層（若仍存在） */
-.member-card .card-bg,
-.member-card .card-overlay{
-  display: none !important;
-}
-
-/* 卡片標題維持在上方 */
-.member-card .card-title{
-  position: absolute;
-  top: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  margin: 0;
-  color: #fff;                  /* 白底圖若看不清可改 #333 */
-  text-shadow: 0 2px 6px rgba(0,0,0,.35);
-  font-weight: 800;
-  letter-spacing: .1em;
-  z-index: 1;
-}
-
-/* 內容底部空間，避免被固定的底部導覽遮住 */
-.page-content{
-  padding-bottom: calc(110px + env(safe-area-inset-bottom)); /* iOS 安全區也照顧到 */
-}
-
-/* 萬一有其他地方設定了 overflow，強制允許捲動 */
-html, body{
-  height: auto;
-  overflow-y: auto;
-}
+/* 內容底部空間，避免被固定導覽遮住；含安全區 */
+.page-content{ padding-bottom:calc(110px + env(safe-area-inset-bottom)); }
+/* 保證可捲動 */
+html, body{ height:auto; overflow-y:auto; }
