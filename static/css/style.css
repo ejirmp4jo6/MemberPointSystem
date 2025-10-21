@@ -191,3 +191,44 @@ html, body{ height:auto; overflow-y:auto; }
 .card-area, .page-section, .page-content{
   background: #fff;
 }
+
+:root{
+  /* 統一圓角，想要多圓自行改 */
+  --card-radius: 22px;
+
+  /* 這裡填“你的卡圖實際寬高”，務必替換 ↓↓↓ */
+  --card-w: 4096;  /* ← 例子：請換成你的實際寬 */
+  --card-h: 2347;  /* ← 例子：請換成你的實際高 */
+}
+
+/* 外層白底容器（你的 class 可能是 .member-card-wrap 或 .card-shell） */
+.member-card-wrap, .card-shell{
+  background:#fff;
+  border-radius: var(--card-radius);
+  overflow:hidden;               /* 重要：把內容裁齊，不讓角落超出 */
+  box-shadow:none;               /* 若有陰影像黑框，先關掉；要陰影再改淡一點 */
+}
+
+/* 真正放圖片的那層 */
+.member-card{
+  position:relative;
+  border-radius: var(--card-radius);
+  overflow:hidden;               /* 重要 */
+  background:#fff;
+  aspect-ratio: var(--card-w) / var(--card-h);   /* 用正確比例就不會裁切 */
+}
+
+/* picture / img 全部同步圓角 */
+.member-card picture{ 
+  display:block; width:100%; height:100%;
+  border-radius: inherit;
+}
+.member-card .card-image{
+  display:block;
+  width:100%;
+  height:100%;             /* 一定要 100%，object-fit 才會生效 */
+  object-fit: cover;       /* 比例正確時 cover 就不會再切字 */
+  object-position: center;
+  border-radius: inherit;
+  filter:none;
+}
