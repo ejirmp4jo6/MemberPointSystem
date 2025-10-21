@@ -148,3 +148,46 @@ html, body{ height:auto; overflow-y:auto; }
 .member-card{
   box-shadow: 0 6px 16px rgba(0,0,0,.08);  /* 或者直接：box-shadow: none; */
 }
+
+/* === 刪黑邊 / 填滿卡面・最終版 === */
+
+/* 卡片外框：要切齊、背景白、不要陰影 */
+.member-card{
+  position: relative;
+  border-radius: 18px;                 /* 你的圓角多少就寫多少 */
+  overflow: hidden;                    /* 重點：把外露的東西切掉 */
+  background: #fff;                    /* 角落底色白，黑框就不會露出 */
+  box-shadow: none;                    /* 若仍想要陰影，可改成 0 8px 16px rgba(0,0,0,.08) */
+  aspect-ratio: 1000 / 630;            /* 這裡用你的卡圖實際比例（例：1000x630）。不確定就先 16/9 */
+}
+
+/* picture / img 跟容器圓角同步，確保不露邊 */
+.member-card picture{
+  display:block;
+  width:100%;
+  height:100%;
+  border-radius: inherit;
+}
+.member-card .card-image{
+  display:block;
+  width:100%;
+  height:100%;              /* 由原本 auto 改成 100%，object-fit 才會真正鋪滿 */
+  object-fit: cover;        /* 鋪滿並等比裁切，不留邊 */
+  object-position: center;
+  border-radius: inherit;   /* 與容器圓角一致 */
+  filter: none;             /* 避免 drop-shadow 看起來像黑框 */
+}
+
+/* 如果你的卡片外面還有一層 wrapper（例如 .member-card-wrap / .card-shell），
+   也把背景設成白 + 移除陰影，避免那一層露出 */
+.member-card-wrap, .card-shell{
+  background: #fff !important;
+  box-shadow: none !important;
+  border-radius: 18px;          /* 如果這層也有圓角，跟 .member-card 一樣 */
+  overflow: hidden;             /* 這層也先保險切齊 */
+}
+
+/* 頁面該區塊（卡片所在的那塊）底色也建議白，避免透出其他底色 */
+.card-area, .page-section, .page-content{
+  background: #fff;
+}
