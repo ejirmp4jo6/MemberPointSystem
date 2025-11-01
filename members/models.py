@@ -4,6 +4,12 @@ from django.utils import timezone
 import uuid
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.validators import RegexValidator
+
+carrier_validator = RegexValidator(
+    regex=r'^/[A-Z0-9.+\-]{7}$',   # 允許前綴「\」或「/」，後面 7 碼英數或 . + -
+    message='發票載具號碼格式需為 \\XXXXXXX（前置反斜線加 7 碼英數）。'
+)
 
 class Member(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
@@ -13,6 +19,13 @@ class Member(models.Model):
     points = models.IntegerField(default=0)
     birthday = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    carrier_code = models.CharField(
+        max_length=8,               # 1 個斜線 + 7 碼
+        blank=True,
+        validators=[carrier_validator],
+        help_text='格式：\\XXXXXXX 或 /XXXXXXX'
+    )
 
     # 預留給 LINE Login
     line_user_id = models.CharField(max_length=64, blank=True, db_index=True)
