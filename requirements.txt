@@ -3,6 +3,7 @@ gunicorn
 whitenoise
 dj-database-url==3.0.1
 psycopg2-binary==2.9.9
+python-barcode==0.15.1
 Pillow
 qrcode==8.2
 requests

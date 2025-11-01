@@ -15,4 +15,5 @@ urlpatterns = [
     path('liff-entry/', views.liff_entry, name='liff_entry'),
     path('auth/line/liff/', views.line_liff_auth, name='line_liff_auth'),
     path('line/callback/', views.line_oauth_callback, name='line_oauth_callback'),
+    path("members/carrier_barcode.png", views.carrier_barcode_image, name="carrier_barcode"),
 ]

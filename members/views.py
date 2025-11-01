@@ -21,6 +21,10 @@ import requests
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponseBadRequest  # 你下方 line_liff_auth 有用到，現在沒匯入會 NameError
+from barcode import Code128
+from barcode.writer import ImageWriter
+import re
 
 def home(request):
     return render(request, 'home.html')
@@ -307,3 +311,20 @@ def line_oauth_callback(request):
     外部瀏覽器用的 OAuth code flow callback（目前先不用，避免 404，回首頁即可）
     """
     return redirect('/')
+
+CARRIER_RE = re.compile(r"^/[A-Z0-9\.\+\-]{7}$")
+
+@login_required
+def carrier_barcode_image(request):
+    m = get_object_or_404(Member, user=request.user)
+    code = (getattr(m, "carrier_code", "") or "").strip().upper()
+
+    if not CARRIER_RE.match(code):   # 這裡只接受 / 開頭
+        raise Http404("no or invalid carrier code")
+
+    buf = BytesIO()
+    Code128(code, writer=ImageWriter()).write(buf, {
+        "module_width": 0.4, "module_height": 28.0,
+        "quiet_zone": 3.0, "font_size": 0, "text_distance": 1.0,
+    })
+    return HttpResponse(buf.getvalue(), content_type="image/png")

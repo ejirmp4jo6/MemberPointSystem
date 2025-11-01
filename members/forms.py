@@ -1,6 +1,7 @@
 from django import forms
 from .models import Member
 import re
+CARRIER_RE = re.compile(r"^/[A-Z0-9\.\+\-]{7}$")
 
 class StaffEarnForm(forms.Form):
     barcode_token = forms.CharField(max_length=64)
@@ -10,7 +11,7 @@ class StaffEarnForm(forms.Form):
 class MemberProfileForm(forms.ModelForm):
     class Meta:
         model = Member
-        fields = ["display_name", "birthday", "phone"]
+        fields = ["display_name", "birthday", "phone","carrier_code"]
         widgets = {
             "display_name": forms.TextInput(attrs={
                 "class": "form-control", "placeholder": "請輸入姓名"
@@ -36,3 +37,9 @@ class MemberProfileForm(forms.ModelForm):
         if not re.match(r"^\d[\d\- ]{7,}$", p):
             raise forms.ValidationError("電話格式不正確")
         return p
+    
+    def clean_carrier_code(self):
+        v = (self.cleaned_data.get("carrier_code") or "").strip().upper()
+        if v and not CARRIER_RE.match(v):
+            raise forms.ValidationError("載具格式須為 / 開頭 + 7 碼（例：/AB12C3D）")
+        return v
