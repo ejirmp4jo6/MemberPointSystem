@@ -37,6 +37,18 @@
                inputmode="tel" placeholder="09xx-xxx-xxx"
                readonly>
       </div>
+
+      <div class="mb-3">
+        <label for="id_carrier_code" class="form-label">
+          發票載具號碼 <small class="text-muted">格式：/XXXXXXX（斜線 + 7 碼英數或 . + -）</small>
+        </label>
+        {{ form.carrier_code|add_class:"form-control"|attr:"placeholder:/ABC1234"|attr:"maxlength:8"|attr:"inputmode:latin"|attr:"autocomplete:off"|attr:"pattern:^/[A-Za-z0-9.+-]{7}$" }}
+        {% if form.carrier_code.errors %}
+          <div class="invalid-feedback d-block">
+            {{ form.carrier_code.errors.0 }}
+          </div>
+        {% endif %}
+      </div>
     </div>
 
     <!-- 區塊：帳務資料（僅顯示） -->

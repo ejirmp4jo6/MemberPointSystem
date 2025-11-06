@@ -327,4 +327,6 @@ def carrier_barcode_image(request):
         "module_width": 0.4, "module_height": 28.0,
         "quiet_zone": 3.0, "font_size": 0, "text_distance": 1.0,
     })
-    return HttpResponse(buf.getvalue(), content_type="image/png")
+    resp = HttpResponse(buf.getvalue(), content_type="image/png")
+    resp["Cache-Control"] = "public, max-age=300"  # 瀏覽器與中間層可快取 5 分鐘
+    return resp
